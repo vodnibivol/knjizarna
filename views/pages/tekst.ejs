@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("../partials/head", { title: entry.naslov }) -%>
+    
+    <style>
+      .container {
+        width: 500px;
+      }
+
+      .tables {
+        max-width: 300px;
+        width: max-content;
+      }
+
+      table {
+        margin-bottom: 1rem;
+        width: 100%;
+      }
+
+      tbody td:nth-child(1) {
+        background: lightblue;
+        font-weight: bold;
+        width: 80px;
+      }
+    </style>
+  </head>
+  <body>
+    <%- include("../partials/nav") %>
+
+    <div class="container">
+      <% if (entry.flags?.duplicate) { %>
+        <em>dokument že obstaja. glej: <a href="/iskanje?q=<%- entry.md5 %>">iskanje</a>.</em>
+      <% }; %>
+
+      <h2><%= entry.avtor || '<Avtor>' %>: <%= entry.naslov %></h2>
+
+      <div class="tables">
+        <% const tableOne = {
+          avtor: entry.avtor,
+          naslov: entry.naslov,
+          kraj: entry.kraj,
+          založba: entry.zalozba,
+          letnica: entry.letnica,
+        }; %> 
+        <%- include("../partials/table-vertical", { obj: tableOne }) %> 
+        
+        <% const tableTwo = {
+          id: entry.id,
+          velikost: entry.sizeStr,
+          flags: JSON.stringify(entry.flags),
+        }; %> 
+        <%- include("../partials/table-vertical", { obj: tableTwo }) %> 
+      </div>
+      
+      <% if (entry.opis) { %>
+        <p class="opis">opis: <%= entry.opis %></p>
+        <% } %>
+      ---
+      <p>
+        <% if (entry.size) { %>
+          <a href="/view/<%- entry.id %>">ogled</a> |
+        <% } %>
+        <a href="/uredi/<%- entry.id %>">uredi</a> |
+        <a href="#" id="remove"><%- isAdmin ? "trajno " : "" %>izbriši</a>
+      </p>
+    </div>
+
+    <%- include("../partials/modal") %>
+
+    <script>
+      $('#remove').onclick = function (e) {
+        e.preventDefault();
+
+        Modal.confirm("<%- isAdmin ? 'trajno ' : '' %>izbriši zapis?",
+        function() {
+          window.location = '/delete/<%- entry.id %>';
+        });
+      }
+    </script>
+
+    <%- include("../partials/msg") %>
+    <%- include("../partials/footer") %>
+  </body>
+</html>

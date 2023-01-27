@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("../partials/head", { title: "novo" }) %>
+    <style>
+      h2 {
+        margin-top: 0.5rem;
+      }
+      form input {
+        margin-bottom: 5px;
+        display: block;
+        width: 200px;
+      }
+
+      form input:focus-within {
+        background: lightgoldenrodyellow;
+      }
+
+      form input[type="text"].changed, form textarea.changed {
+        background: lightgoldenrodyellow;
+      }
+
+      input[type='submit'] {
+        margin-top: 10px;
+        /* background: lightgreen; */
+      }
+
+      input[type='file'] {
+        /* padding: 10rem 1rem; */
+        border: none;
+      }
+
+      input[type='submit'] {
+        margin-top: 1.5rem;
+      }
+
+      .container {
+        width: fit-content;
+      }
+
+      body {
+        /* very light blue */
+        background: rgb(240, 250, 255);
+      }
+
+      textarea {
+        width: 200px;
+        border: 1px solid;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <%- include("../partials/nav") %>
+
+    <div class="container">
+      <form action="/publish" method="post" enctype="multipart/form-data" autocomplete="off" spellcheck="false">
+        <h2>datoteka</h2>
+        <% if (!entry.id || entry.flags?.missing) { %>
+          <input type="file" id="doc" name="doc" accept="application/pdf" required />
+        <% } else { %>
+        <em>datoteka je že naložena</em>
+        <br /><br />
+        <% }; %>
+
+        <% const fields = [
+          { dbName: 'avtor', text: 'avtor', plc: 'Aristotel' },
+          { dbName: 'naslov', text: 'naslov', plc: 'De Anima', required: true },
+          { dbName: 'letnica', text: 'letnica', plc: '2010' },
+          { dbName: 'zalozba', text: 'založba', plc: 'Logos' },
+          { dbName: 'kraj', text: 'kraj', plc: 'Ljubljana' },
+        ]; %> 
+
+        <h2>o tekstu</h2>
+        <% for (let el of fields) { %>
+          <label for="<%- el.dbName %>"><%- el.text %></label>
+          <input type="text" name="<%- el.dbName %>" id="<%- el.dbName %>" data-prev="<%- entry[el.dbName] %>" placeholder="<<%- el.plc %>>" value="<%- entry[el.dbName] %>" <%- el.required && 'required' %> />
+        <% }; %>
+
+        <label for="opis">opis</label>
+        <textarea name="opis" id="opis" rows="2" data-prev="<%- entry.opis %>" placeholder="strani, opis datoteke .."><%- entry.opis %></textarea>
+        
+        <input type="hidden" name="id" value="<%- entry.id %>" />
+
+        <input type="submit" value="<%- (entry.id ? 'shrani' : 'objavi') %>" tabindex="-1" disabled />
+      </form>
+    </div>
+
+    <%- include("../partials/msg") %>
+    <%- include("../partials/footer") %>
+
+    <script>
+      (function() {
+        let isModified = false;
+        let isSubmitting = false;
+
+        $("form").oninput = function(e) {
+          const t = e.target;
+          if (t.dataset.prev !== t.value) {
+            t.classList.add('changed');
+          } else {
+            t.classList.remove('changed');
+          }
+
+          isModified = $('form .changed');
+          $('form input[type="submit"]').disabled = !isModified;
+        }
+
+        $('form').onsubmit = function() {
+          window.onbeforeunload = null;
+        }
+
+        window.onbeforeunload = function(e) {
+          console.log(e);
+          if (isModified) {
+            e.preventDefault();
+            return 'imaš neshranjene spremembe!';
+          }
+        }
+      })()
+    </script>
+  </body>
+</html>

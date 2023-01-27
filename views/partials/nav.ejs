@@ -1,0 +1,63 @@
+<style>
+  header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 5px 3rem;
+    background: #f7f7f7;
+    border-bottom: 1px solid;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  header a.home img {
+    height: 30px;
+    margin-right: 1rem;
+  }
+
+  header a.home {
+    font-size: 25px;
+    font-weight: normal;
+    display: flex;
+    align-items: center;
+  }
+
+  .left {
+    position: relative;
+  }
+
+</style>
+
+
+<header>
+  <div class="left">
+    <% if (typeof prev !== 'undefined') { %>
+      <script>
+        console.log("<%- prev %>");
+      </script>
+      <style>
+        a.home::before {
+          content: "<";
+          position: absolute;
+          left: -20px;
+          font-size: 18px;
+          font-weight: bold;
+        }
+      </style>
+      <span><a href="javascript:history.back()" class="home black"> <img src="/public/img/k.png" alt="" />knjižarna</a></span>
+    <% } else { %>
+      <span><a href="/" class="home black"> <img src="/public/img/k.png" alt="" />knjižarna</a></span>
+    <% }; %>
+  </div>
+  <div class="right">
+    <a class="black" href="/novo">novo</a> |
+    <% if (isAdmin) { %>
+      <a class="black" href="/odjava">odjava</a>
+    <% } else { %>
+      <a class="black" href="/prijava">prijava</a>
+    <% }; %> 
+  </div>
+</header>

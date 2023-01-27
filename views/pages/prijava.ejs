@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("../partials/head", { title: "prijava" }); -%>
+
+    <style>
+      .container {
+        position: absolute;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 2rem;
+        text-align: center;
+        width: 300px;
+      }
+
+      input.txt {
+        border: 1px dashed;
+      }
+      
+      input.txt:focus-within, input.txt:not(:placeholder-shown) {
+        border: 1px solid;
+      }
+      
+      input[type='submit'] {
+        background: lightgray;
+      }
+
+      input[type='submit']:active {
+        background: gray;
+      }
+
+      input {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+
+      .container img {
+        width: 100%;
+        border: thick ridge;
+        object-fit: cover;
+      }
+    </style>
+  </head>
+  <body>
+    <%- include("../partials/nav") %>
+
+    <div class="container">
+      <img src="/public/img/alexand.jpg" alt="medieval schola">
+      <h2>admin prijava</h2>
+      <form action="/prijava" method="post">
+        <input class="txt" type="text" placeholder="uporabnik" name="usr" id="usr" autocomplete="off" required />
+        <br>
+        <input class="txt" type="password" placeholder="geslo" name="pwd" id="pwd" autocomplete="off" required />
+        <br>
+        <br>
+        <input type="submit" value="ok" />
+      </form>
+    </div>
+
+    <%- include("../partials/msg") %>
+    <%- include("../partials/footer") %>
+  </body>
+</html>

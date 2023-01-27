@@ -1,0 +1,73 @@
+<%#-- ISKANJE tabela --%> 
+
+<style>
+  table {
+    margin-bottom: 1rem;
+  }
+  thead {
+    background: #aaa;
+  }
+
+  tbody tr:nth-child(even) {
+    background: #f0f0f0;
+  }
+
+  tbody tr:hover {
+    background: rgb(255, 224, 224);
+  }
+
+  td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  th:nth-child(2), td:nth-child(2) {
+    /* avtor */
+    max-width: 150px;
+    width: 150px;
+  }
+
+  th:nth-child(3), td:nth-child(3) {
+    /* naslov */
+    font-weight: bold;
+    max-width: 350px;
+    width: 350px;
+  }
+</style>
+
+<table>
+  <thead>
+    <th>id</th>
+    <th>avtor</th>
+    <th>naslov</th>
+    <th>leto</th>
+    <th>velikost</th>
+  </thead>
+
+  <tbody>
+    <% for (let res of results) { %>
+    <tr>
+      <% if (res.flags?.deleted) { %>
+        <td style="background: lightpink;">
+      <% } else if (res.flags?.missing) { %>
+        <td style="background: bisque;">
+      <% } else if (res.flags?.duplicate) { %>
+        <td style="background: lightblue;">
+      <% } else { %>
+      <td>
+      <% }; %>
+      <%- res.id %>
+      </td>
+      <td><%- res.avtor || '-' %></td>
+      <td>
+        <a class="black" href="/tekst/<%- res.id %>">
+          <%- res.naslov %>
+        </a>
+      </td>
+      <td><%- res.letnica || '-' %></td>
+      <td><%- res.sizeStr || '-' %></td>
+    </tr>
+    <% } %>
+  </tbody>
+</table>

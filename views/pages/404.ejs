@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("../partials/head", { title: "error" }) %>
+    <style>
+      .container {
+        position: absolute;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+      }
+
+      .container img {
+        border: 1px solid;
+        border: 2px inset;
+        border: 4px ridge;
+        height: 200px;
+      }
+      </style>
+  </head>
+  <body>
+    <%- include("../partials/nav") %>
+    <div class="container">
+      <img src="/public/img/404.png" alt="">
+      <h2>ne najdem !</h2>
+    </div>
+
+    <%- include("../partials/footer") %>
+  </body>
+</html>

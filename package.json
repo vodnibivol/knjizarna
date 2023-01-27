@@ -1,0 +1,28 @@
+{
+  "name": "knjizarna",
+  "version": "1.0.0",
+  "description": "knjigice skeni teksti",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon --ignore public/ --ignore db/ server.js",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "knjigice",
+    "skeni",
+    "teksti"
+  ],
+  "author": "filip",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.1",
+    "cookie-parser": "^1.4.6",
+    "ejs": "^3.1.8",
+    "express": "^4.18.2",
+    "express-fileupload": "^1.4.0",
+    "nedb": "^1.8.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}

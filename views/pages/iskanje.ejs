@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("../partials/head", { title: query }) %>
+  </head>
+  <body>
+    <%- include("../partials/nav") %>
+    <div class="container">
+      <h2>Rezultati iskanja: "<%- query %>"</h2>
+
+      <%- include("../partials/table-horizontal") %> 
+
+      <% if (!results.length) { %>
+        <h3>ni rezultatov.</h3>
+      <% } %>
+    </div>
+
+    <%- include("../partials/msg") %>
+    <%- include("../partials/footer") %>
+  </body>
+</html>

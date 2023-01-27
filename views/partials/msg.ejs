@@ -1,0 +1,50 @@
+<% if (msg) { %>
+<style>
+  #msg {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      border: thick ridge;
+      border-bottom: none;
+      padding: 1rem;
+      background: white;
+      cursor: default;
+
+      z-index: 100;
+    }
+
+    #msg * {
+      pointer-events: none;
+    }
+
+    #msg.error {
+      background: rgb(255, 152, 152);
+    }
+
+    #msg.ok {
+      background: rgb(202, 255, 181);
+    }
+
+    #msg:hover {
+      opacity: 0.5;
+    }
+</style>
+
+<div id="msg" class="<%- msg.status %>">
+  <span><%= msg.text %></span>
+</div>
+
+<script>
+  (function() {
+    $("#msg").onclick = () => {
+      $("#msg").remove();
+    }
+    
+    const u = new URL(location.href);
+    u.searchParams.delete("msg")
+    const newUrl = u.toString();
+    window.history.pushState({}, document.title, newUrl);
+  })();
+</script>
+<% } %>

@@ -1,0 +1,98 @@
+* {
+  box-sizing: border-box !important;
+  font-family: Courier, Menlo, Consolas, monospace;
+}
+
+::selection {
+  background: lightpink;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: ivory;
+  padding-top: 4rem;
+  font-size: 14px;
+}
+
+a.black {
+  text-decoration: none;
+  color: black;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+em {
+  color: #bbb;
+}
+
+input:not([type="file"]),
+button {
+  height: 20px;
+  border-radius: 0;
+  appearance: none;
+  padding: 2px 6px;
+  border: 1px solid;
+  outline: none;
+}
+
+textarea {
+  border: 2px solid black;
+  resize: none;
+  overflow-y: scroll;
+  outline: none;
+  padding: 2px 6px;
+  // font-weight: bold; // raje posebej
+
+  &:focus-within {
+    background: lightgoldenrodyellow;
+  }
+}
+
+label {
+  font-weight: bold;
+}
+
+button,
+input[type='submit'] {
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.container {
+  width: fit-content;
+  margin: 4rem auto;
+  background: #f7f7f7;
+  border: 1px solid black;
+  padding: 2rem;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+table {
+  background: white;
+
+  th,
+  td {
+    text-align: start;
+    padding: 1px 3px;
+  }
+}
+
+table,
+th,
+td {
+  border: 1px solid black;
+  // border-collapse: collapse;
+}
