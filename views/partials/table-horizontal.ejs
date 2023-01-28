@@ -59,13 +59,13 @@
       <% }; %>
       <%- res.id %>
       </td>
-      <td><%- res.avtor || '-' %></td>
+      <td><%- res.author || '-' %></td>
       <td>
         <a class="black" href="/tekst/<%- res.id %>">
-          <%- res.naslov %>
+          <%- res.title %>
         </a>
       </td>
-      <td><%- res.letnica || '-' %></td>
+      <td><%- res.year || '-' %></td>
       <td><%- res.sizeStr || '-' %></td>
     </tr>
     <% } %>

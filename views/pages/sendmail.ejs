@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("../partials/head", { title: "registracija" }); -%>
+
+    <style>
+      .container {
+        position: absolute;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 2rem;
+        text-align: center;
+        /* width: 300px; */
+      }
+      
+      input[type="email"] {
+        width: 200px;
+        /* border: 1px dashed; */
+      }
+      
+      input[type="email"]:focus-within {
+        border: 1px solid;
+      }
+      
+      input[type='submit'] {
+        background: lightgray;
+      }
+
+      input[type='submit']:not(:disabled):active {
+        background: gray;
+      }
+
+      h2 {
+        margin-top: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <%- include("../partials/nav") %>
+
+    <div class="container">
+      <!-- <img src="/public/img/silentivm.jpg" alt="medieval schola"> -->
+      <h2>registracija</h2>
+      <form action="#" method="post">
+        <input type="email" placeholder="miska@malahiska.com" name="email" id="email" autocomplete="off" required />
+        <input type="submit" value="ok" />
+      </form>
+    </div>
+
+    <%- include("../partials/msg") %>
+
+    <script>
+      $('form').onsubmit = (e) => {
+        e.preventDefault();
+        
+        const email = $('input[type="email"]').value;
+        [...$('form').children].forEach((c) => (c.disabled = true));
+        
+        // AJAX!
+        Msg.show('pošiljanje sporočila ..');
+        postData('/confirmemail', { email }).then((res) => {
+          if (res.status === 'ok') {
+            Msg.show(res.msg, res.status);
+          } else if (res.status === 'error') {
+            Msg.show(res.msg, res.status);
+            [...$('form').children].forEach((c) => (c.disabled = false));
+          }
+        });
+      }
+    </script>
+
+    <%- include("../partials/footer") %>
+  </body>
+</html>

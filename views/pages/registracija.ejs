@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("../partials/head", { title: "registracija" }); -%>
+
+    <style>
+      h2 {
+        margin-top: 0.5rem;
+      }
+      form input {
+        margin-bottom: 5px;
+        display: block;
+        width: 200px;
+      }
+
+      form input:focus-within {
+        background: lightgoldenrodyellow;
+      }
+
+      form input[type="text"].changed, form textarea.changed {
+        background: lightgoldenrodyellow;
+      }
+
+      input[type='submit'] {
+        margin-top: 10px;
+        /* background: lightgreen; */
+      }
+
+      input[type='file'] {
+        /* padding: 10rem 1rem; */
+        border: none;
+      }
+
+      input[type='submit'] {
+        margin-top: 1.5rem;
+      }
+
+      .container {
+        width: fit-content;
+
+        position: absolute;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 2rem;
+        /* width: 300px; */
+      }
+
+      h2 {
+        text-align: center;
+      }
+
+      body {
+        /* very light blue */
+        background: rgb(240, 250, 255);
+      }
+
+      input:disabled {
+        color: red;
+        color: rgb(169, 169, 169);
+      }
+    </style>
+  </head>
+  <body>
+    <%- include("../partials/nav") %>
+    
+    <div class="container">
+      <form action="/registracija" method="post">
+        <!-- EMAIL CONFIRMED: REGISTER -->
+        <h2>registracija</h2>
+        <br>
+
+        <label for="email">email [potrjen]</label>
+        <input type="email" id="email" placeholder="malamis" value="<%- email %>" disabled>
+
+        <label for="usr">uporabniško ime</label>
+        <input type="text" name="usr" id="usr" placeholder="malamis" value="<%- usr %>" required>
+
+        <label for="pwd">geslo</label>
+        <input type="password" name="pwd" id="pwd" placeholder="strasno-geslo123" required>
+
+        <label for="pwdCheck">ponovno geslo</label>
+        <input type="password" name="pwdCheck" id="pwdCheck" placeholder="strasno-geslo123" required>
+
+        <input type="hidden" name="ref" value="<%- ref %>">
+
+        <input type="submit" value="registracija">
+      </div>
+    </form>
+
+    
+    <%- include("../partials/msg") %>
+    <%- include("../partials/modal") %>
+
+    <script>
+
+    </script>
+
+    <%- include("../partials/footer") %>
+  </body>
+</html>

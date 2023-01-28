@@ -33,51 +33,55 @@
         <em>dokument že obstaja. glej: <a href="/iskanje?q=<%- entry.md5 %>">iskanje</a>.</em>
       <% }; %>
 
-      <h2><%= entry.avtor || '<Avtor>' %>: <%= entry.naslov %></h2>
+      <h2><%= entry.author || '<Neznano>' %>: <%= entry.title %></h2>
 
       <div class="tables">
         <% const tableOne = {
-          avtor: entry.avtor,
-          naslov: entry.naslov,
-          kraj: entry.kraj,
-          založba: entry.zalozba,
-          letnica: entry.letnica,
+          avtor: entry.author,
+          naslov: entry.title,
+          kraj: entry.place,
+          založba: entry.publisher,
+          letnica: entry.year,
         }; %> 
         <%- include("../partials/table-vertical", { obj: tableOne }) %> 
         
         <% const tableTwo = {
           id: entry.id,
           velikost: entry.sizeStr,
-          flags: JSON.stringify(entry.flags),
+          naložil: entry.uploadedBy,
+          // flags: JSON.stringify(entry.flags),
         }; %> 
         <%- include("../partials/table-vertical", { obj: tableTwo }) %> 
       </div>
       
       <% if (entry.opis) { %>
-        <p class="opis">opis: <%= entry.opis %></p>
+        <p class="opis">opis: <i><%= entry.opis %></i></p>
         <% } %>
       ---
       <p>
-        <% if (entry.size) { %>
-          <a href="/view/<%- entry.id %>">ogled</a> |
+        <a href="/ogled/<%- entry.id %>">ogled</a> |
+        <a href="/ogled/<%- entry.id %>?download" download="<%- entry.originalFilename %>">download</a>
+        <% if (user?.admin || entry.uploadedBy === user?.usr) { %>
+          | <a href="/uredi/<%- entry.id %>">uredi</a>
+          | <a href="#" id="remove">izbriši</a>
         <% } %>
-        <a href="/uredi/<%- entry.id %>">uredi</a> |
-        <a href="#" id="remove"><%- isAdmin ? "trajno " : "" %>izbriši</a>
       </p>
     </div>
 
     <%- include("../partials/modal") %>
 
-    <script>
-      $('#remove').onclick = function (e) {
-        e.preventDefault();
-
-        Modal.confirm("<%- isAdmin ? 'trajno ' : '' %>izbriši zapis?",
-        function() {
-          window.location = '/delete/<%- entry.id %>';
-        });
-      }
-    </script>
+    <% if (user?.admin || entry.uploadedBy === user?.usr) { %>
+      <script>
+        $('#remove').onclick = function (e) {
+          e.preventDefault();
+          
+          Modal.confirm("izbriši zapis?",
+          function() {
+            window.location = '/delete/<%- entry.id %>';
+          });
+        }
+        </script>
+    <% } %>
 
     <%- include("../partials/msg") %>
     <%- include("../partials/footer") %>

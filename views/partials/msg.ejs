@@ -1,4 +1,3 @@
-<% if (msg) { %>
 <style>
   #msg {
       position: absolute;
@@ -18,11 +17,11 @@
       pointer-events: none;
     }
 
-    #msg.error {
-      background: rgb(255, 152, 152);
+    #msg[data-status="error"] {
+      background: rgb(255, 195, 195);
     }
 
-    #msg.ok {
+    #msg[data-status="ok"] {
       background: rgb(202, 255, 181);
     }
 
@@ -31,20 +30,40 @@
     }
 </style>
 
-<div id="msg" class="<%- msg.status %>">
-  <span><%= msg.text %></span>
-</div>
+<div id="msg" style="display:none;"></div>
 
 <script>
-  (function() {
-    $("#msg").onclick = () => {
-      $("#msg").remove();
+  const Msg = (function() {
+    // TODO: status
+
+    const msgEl = $('#msg');
+
+    msgEl.onclick = _hide;
+
+    // init
+    _showAndRemoveSearch();
+
+    function _showAndRemoveSearch() {
+      const u = new URL(location.href);
+      const msg = u.searchParams.get('msg') || '<%- msg %>';
+      if (msg) show(msg);
+
+      // remove msg parameter
+      // u.searchParams.delete('msg');
+      // const newUrl = u.toString();
+      // window.history.replaceState({}, document.title, newUrl);
     }
-    
-    const u = new URL(location.href);
-    u.searchParams.delete("msg")
-    const newUrl = u.toString();
-    window.history.pushState({}, document.title, newUrl);
+
+    function show(msg, status = '') {
+      msgEl.innerText = msg;
+      msgEl.style.display = 'block';
+      msgEl.dataset.status = status;
+    }
+
+    function _hide() {
+      msgEl.style.display = 'none';
+    }
+
+    return { show };
   })();
 </script>
-<% } %>

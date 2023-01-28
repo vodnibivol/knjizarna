@@ -40,6 +40,11 @@
         border: thick ridge;
         object-fit: cover;
       }
+
+      .links, .links a {
+        font-size: 12px;
+        color: rgb(85, 26, 139);
+      }
     </style>
   </head>
   <body>
@@ -47,7 +52,7 @@
 
     <div class="container">
       <img src="/public/img/alexand.jpg" alt="medieval schola">
-      <h2>admin prijava</h2>
+      <h2>prijava</h2>
       <form action="/prijava" method="post">
         <input class="txt" type="text" placeholder="uporabnik" name="usr" id="usr" autocomplete="off" required />
         <br>
@@ -56,6 +61,8 @@
         <br>
         <input type="submit" value="ok" />
       </form>
+
+      <p class="links"><a href="#">pozabljeno geslo?</a> | <a href="/registracija">registracija</a></p>
     </div>
 
     <%- include("../partials/msg") %>

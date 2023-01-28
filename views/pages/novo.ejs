@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <%- include("../partials/head", { title: "novo" }) %>
+
     <style>
       h2 {
         margin-top: 0.5rem;
@@ -64,11 +65,11 @@
         <% }; %>
 
         <% const fields = [
-          { dbName: 'avtor', text: 'avtor', plc: 'Aristotel' },
-          { dbName: 'naslov', text: 'naslov', plc: 'De Anima', required: true },
-          { dbName: 'letnica', text: 'letnica', plc: '2010' },
-          { dbName: 'zalozba', text: 'založba', plc: 'Logos' },
-          { dbName: 'kraj', text: 'kraj', plc: 'Ljubljana' },
+          { dbName: 'author', text: 'avtor', plc: 'Aristotel' },
+          { dbName: 'title', text: 'naslov', plc: 'De Anima', required: true },
+          { dbName: 'year', text: 'letnica', plc: '2010' },
+          { dbName: 'publisher', text: 'založba', plc: 'Logos' },
+          { dbName: 'place', text: 'kraj', plc: 'Ljubljana' },
         ]; %> 
 
         <h2>o tekstu</h2>
@@ -77,8 +78,8 @@
           <input type="text" name="<%- el.dbName %>" id="<%- el.dbName %>" data-prev="<%- entry[el.dbName] %>" placeholder="<<%- el.plc %>>" value="<%- entry[el.dbName] %>" <%- el.required && 'required' %> />
         <% }; %>
 
-        <label for="opis">opis</label>
-        <textarea name="opis" id="opis" rows="2" data-prev="<%- entry.opis %>" placeholder="strani, opis datoteke .."><%- entry.opis %></textarea>
+        <label for="description">opis</label>
+        <textarea name="description" id="description" rows="2" data-prev="<%- entry.description %>" placeholder="strani, opis datoteke .."><%- entry.description %></textarea>
         
         <input type="hidden" name="id" value="<%- entry.id %>" />
 
