@@ -45,13 +45,16 @@
 
     function _showAndRemoveSearch() {
       const u = new URL(location.href);
-      const msg = u.searchParams.get('msg') || '<%- msg %>';
-      if (msg) show(msg);
+      const msg = u.searchParams.get('msg') || "<%- msg %>";
+      if (msg) {
+        show(msg);
+        setTimeout(_hide, 8 * 1000);
+      }
 
       // remove msg parameter
-      // u.searchParams.delete('msg');
-      // const newUrl = u.toString();
-      // window.history.replaceState({}, document.title, newUrl);
+      u.searchParams.delete('msg');
+      const newUrl = u.toString();
+      window.history.replaceState({}, document.title, newUrl);
     }
 
     function show(msg, status = '') {

@@ -21,14 +21,6 @@
       input[type="text"]:focus-within {
         border: 1px solid;
       }
-      
-      input[type='submit'] {
-        background: lightgray;
-      }
-
-      input[type='submit']:active {
-        background: gray;
-      }
 
       .container img {
         width: 100%;
@@ -51,9 +43,9 @@
 
     <script>
       $('.container').onclick = () => $('input[type="text"]').select();
+      window.onload = () => $('input[type="text"]').select();
     </script>
 
-    <%- include("../partials/msg") %>
     <%- include("../partials/footer") %>
   </body>
 </html>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <%- include("../partials/head", { title: "novo" }) %>
+    <%- include("../partials/head", { title: entry.id ? 'urejanje' : 'novo' }) %>
 
     <style>
       h2 {
@@ -46,6 +46,7 @@
 
       textarea {
         width: 200px;
+        /* height: 34px; */
         border: 1px solid;
         display: block;
       }
@@ -66,10 +67,10 @@
 
         <% const fields = [
           { dbName: 'author', text: 'avtor', plc: 'Aristotel' },
-          { dbName: 'title', text: 'naslov', plc: 'De Anima', required: true },
-          { dbName: 'year', text: 'letnica', plc: '2010' },
-          { dbName: 'publisher', text: 'založba', plc: 'Logos' },
+          { dbName: 'title', text: 'naslov', plc: 'Nikomahova etika', required: true },
           { dbName: 'place', text: 'kraj', plc: 'Ljubljana' },
+          { dbName: 'publisher', text: 'založba', plc: 'Cankarjeva založba' },
+          { dbName: 'year', text: 'letnica', plc: '1964' },
         ]; %> 
 
         <h2>o tekstu</h2>
@@ -81,13 +82,21 @@
         <label for="description">opis</label>
         <textarea name="description" id="description" rows="2" data-prev="<%- entry.description %>" placeholder="strani, opis datoteke .."><%- entry.description %></textarea>
         
+        <% if (entry.id && user?.usr !== entry.uploadedBy) { %>
+          <br>
+          <hr>
+          <label for="edits">opis sprememb</label>
+          <input type="text" name="edits" id="edits" placeholder="typo; dodal(a) naslov .." required>
+          <label for="source">vir</label>
+          <input type="text" name="source" id="source" placeholder="cobiss; <url>; dokument .." required>
+        <% } %>
+
         <input type="hidden" name="id" value="<%- entry.id %>" />
 
         <input type="submit" value="<%- (entry.id ? 'shrani' : 'objavi') %>" tabindex="-1" disabled />
       </form>
     </div>
 
-    <%- include("../partials/msg") %>
     <%- include("../partials/footer") %>
 
     <script>
@@ -95,8 +104,7 @@
         let isModified = false;
         let isSubmitting = false;
 
-        $("form").oninput = function(e) {
-          const t = e.target;
+        $("form").oninput = function({ target:t }) {
           if (t.dataset.prev !== t.value) {
             t.classList.add('changed');
           } else {
@@ -107,16 +115,42 @@
           $('form input[type="submit"]').disabled = !isModified;
         }
 
-        $('form').onsubmit = function() {
+        $('form').onsubmit = function(e) {
           window.onbeforeunload = null;
+
+//           e.preventDefault();
+
+//           const changes = [...$('form').children].filter(({ value, dataset:d }) => d.prev && d.prev !== value);
+//           console.log(changes);
+//           Modal.alt({
+//             html: true,
+//             msg: `\
+// <label for="spremembe">opis sprememb</label>
+// <input type="text" name="spremembe" id="spremembe" style="width:350px;" placeholder="'typo', 'dodal(a) naslov' ..">
+// <label for="vir">vir</label>
+// <input type="text" name="vir" id="vir" style="width:350px;" placeholder="cobiss, url, dokument, knjiga ..">`,
+//             onConfirm: () => 0,
+//             onCancel: () => 0,
+//           })
         }
 
         window.onbeforeunload = function(e) {
-          console.log(e);
           if (isModified) {
             e.preventDefault();
             return 'imaš neshranjene spremembe!';
           }
+        }
+
+        // --- load msg
+
+        const msg = `\
+        polja, za katera nisi prepričan, raje pusti prazna.
+        pomagaj si z iskanjem COBISS:
+
+        <a href="https://plus.cobiss.net/cobiss/si/sl/bib/search" target="_blank">https://plus.cobiss.net/</a>`;
+
+        window.onload = (e) => {
+          Modal.alt({ msg, html: true, remember: 'novo_opomnik' });
         }
       })()
     </script>

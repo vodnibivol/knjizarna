@@ -16,21 +16,21 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-async function sendConfirmationEmail(recipient, hash, expires) {
+async function sendConfirmationEmail(recipient, ref, expires) {
   const expirationStr = new Intl.DateTimeFormat('sl', { timeStyle: 'medium', dateStyle: 'long' }).format(expires);
 
   await transporter.sendMail({
-    from: '"vodnibivol 📖" <test@vodnibivol.org>',
+    from: '"knjižarna 📖" <test@vodnibivol.org>',
     to: recipient,
     subject: 'potrditev e-poštnega naslova',
-    text: `potrdi nov račun! odpri povezavo: http://localhost:3000/registracija?ref=${hash}\npovezava je veljavna do: ${expirationStr}`, // plain text
+    text: `potrdi nov račun! odpri povezavo: http://localhost:3000/registracija?ref=${ref}\npovezava je veljavna do: ${expirationStr}`,
     html: `\
     <div style="font-family:Courier,monospace;">
       <p>potrdi kreiranje računa! klik na
-        <a href="http://localhost:3000/registracija?ref=${hash}">link</a> :)
+        <a href="http://localhost:3000/registracija?ref=${ref}">link</a> :)
       </p>
       <p style="font-family:Courier,monospace;">povezava je veljavna 24 ur [do: ${expirationStr}]</p>
-    </div>`, // html version
+    </div>`,
   });
 }
 

@@ -11,14 +11,26 @@
 
   #modal .frame {
     min-width: 300px;
+    max-width: 600px;
 
     background: ivory;
+    /* background: #ebfaff; */
     padding: 1rem;
     border: thick ridge;
   }
 
+  #modal span.msg {
+    white-space: pre-line;
+    /* ohrani line-wrape, izbriše padding na začetku */
+  }
+
   #modal .buttons {
     text-align: end;
+  }
+
+  #modal label#remember {
+    font-weight: normal;
+    user-select: none;
   }
 </style>
 
@@ -27,6 +39,7 @@
     <span class="msg"></span>
     <hr>
     <div class="buttons">
+      <label id="remember">ne prikaži več <input type="checkbox"> |</label>
       <button type="button" class="cancel">prekliči</button>
       <button type="button" class="ok">OK</button>
     </div>
@@ -35,21 +48,20 @@
 
 <script>
   const Modal = (function() {
-    const modal = $('#modal');
-    const okBtn = $('#modal .buttons .ok');
-    const cancelBtn = $('#modal .buttons .cancel');
+    // --- events
 
-    modal.onclick = _onClick;
-    
-    function _onClick(e) {
-      if (e.target.matches('.ok')) {
-        _onOk();
+    $('#modal').onclick = function ({ target: t }) {
+      if (t.matches('button.ok')) {
+        if ($('#remember input').checked) localStorage.setItem(_lsKey, 1);
+        _onConfirm && _onConfirm();
         _closeModal();
-      } else if (e.target.matches('.cancel')) {
-        _onCancel();
+      } else if (t.matches('button.cancel')) {
+        _onCancel && _onCancel();
         _closeModal();
       }
     }
+
+    // --- aliases
     
     function _openModal() {
       $('#modal').style.display = 'flex';
@@ -59,26 +71,23 @@
       $('#modal').style.display = 'none';
     };
 
-    function _setMsg(msg) {
-      $('#modal .msg').innerText = msg;
+    // --- returned functions
+
+    let _onConfirm, _onCancel, _lsKey;
+    
+    function alt(options = {}) {
+      if (options.html) $('#modal .msg').innerHTML = options.msg;
+      else $('#modal .msg').innerText = options.msg;
+      _onConfirm = options.onConfirm || eval;
+      _onCancel = options.onCancel;
+      _lsKey = options.remember;
+      $('#modal button.cancel').style.display = options.onCancel ? 'inline-block' : 'none';
+      $('#modal #remember').style.display = options.remember ? 'inline-block' : 'none';
+      
+      if (localStorage.getItem(options.remember)) _onConfirm();
+      else _openModal();
     }
 
-    let _onOk, _onCancel;
-
-    return {
-      confirm(msg, onConfirm, onCancel) {
-        _setMsg(msg);
-        _onOk = onConfirm;
-        _onCancel = onCancel || _closeModal;
-        cancelBtn.style.display = 'inline-block';
-        _openModal();
-      },
-      alert(msg) {
-        _setMsg(msg);
-        _onOk = _closeModal;
-        cancelBtn.style.display = 'none';
-        _openModal();
-      }
-    }
-  })()
+    return { confirm, alert, alt };
+  })();
 </script>

@@ -22,10 +22,17 @@ app.use(cookieParser());
 
 const db = {};
 
-db.users = new Datastore({ filename: path.resolve(__dirname, 'db', 'users.db'), autoload: true });
+db.users = new Datastore({ filename: path.resolve(__dirname, 'db', 'users.db'), autoload: true, timestampData: true });
 db.refs = new Datastore({ filename: path.resolve(__dirname, 'db', 'refs.db'), autoload: true });
 db.sessions = new Datastore({ filename: path.resolve(__dirname, 'db', 'sessions.db'), autoload: true });
-db.files = new Datastore({ filename: path.resolve(__dirname, 'db', 'files.db'), autoload: true });
+db.files = new Datastore({
+  filename: path.resolve(__dirname, 'db', 'files.db'),
+  autoload: true,
+  compareStrings: (a, b) => {
+    return a.toLowerCase().localeCompare(b.toLowerCase());
+  },
+  timestampData: true,
+});
 
 checkDuplicates();
 
@@ -37,15 +44,17 @@ app.get('/', [checkLogin, getMsg], (req, res) => {
 
 app.get('/iskanje', [checkLogin, getMsg], async (req, res) => {
   const reg = new RegExp(req.query.q, 'i');
-  const results = await db.files.find({
-    $or: [
-      { author: { $regex: reg } },
-      { title: { $regex: reg } },
-      { md5: { $regex: reg } },
-      { id: { $regex: reg } },
-      { publisher: { $regex: reg } },
-    ],
-  });
+  const results = await db.files
+    .find({
+      $or: [
+        { author: { $regex: reg } },
+        { title: { $regex: reg } },
+        { md5: { $regex: reg } },
+        { id: { $regex: reg } },
+        { publisher: { $regex: reg } },
+      ],
+    })
+    .sort({ title: 1 });
 
   results.forEach((r) => (r.sizeStr = formatBytes(r.size))); // format bytes
   res.render('pages/iskanje', { title: 'iskanje', query: req.query.q, results });
@@ -85,7 +94,7 @@ app.get('/ogled/:id', async (req, res, next) => {
 
 app.get('/novo', [checkLogin, getMsg], (req, res) => {
   if (!res.locals.user) {
-    return res.redirect('/prijava?msg=' + encodeURIComponent('za objavo se prijavite:)'));
+    return res.redirect('/prijava?msg=' + encodeURIComponent('za objavo se prijavi :)'));
   }
   res.render('pages/novo', { entry: {} });
 });
@@ -139,6 +148,17 @@ app.post('/publish', checkLogin, async (req, res) => {
     description: req.body.description,
   };
 
+  // EDITS
+  if (req.body.edits) {
+    info.lastEdit = {
+      user: res.locals.user.usr,
+      edits: req.body.edits,
+      source: req.body.source,
+    };
+  }
+
+  console.log(info);
+
   // FIRST TIME: uploading file
   if (req.files) {
     const file = req.files.doc;
@@ -178,8 +198,16 @@ app.post('/publish', checkLogin, async (req, res) => {
   }
 });
 
-app.get('/delete/:id', checkLogin, async (req, res) => {
+app.get('/delete/:id', [checkLogin, getMsg], async (req, res) => {
   const entry = await db.files.findOne({ id: req.params.id });
+
+  if (!res.locals.user?.usr) {
+    return res.redirect('/prijava?msg=' + encodeURIComponent('za izbris se prijavi!'));
+  } else if (res.locals.user?.usr !== entry.uploadedBy && !res.locals.user?.admin) {
+    // mark as "delete"
+    await db.files.update({ id: req.params.id }, { $set: { 'flags.delete': res.locals.user.usr } });
+    return res.redirect(`/tekst/${req.params.id}?msg=${encodeURIComponent('dokument je bil označen za izbris.')}`);
+  }
 
   fs.unlinkSync(path.resolve(__dirname, 'db', 'pdf', entry.filename));
   await db.files.remove({ id: req.params.id });
@@ -192,6 +220,7 @@ app.get('/delete/:id', checkLogin, async (req, res) => {
 // --- UPORABNIKI IN PRIJAVA
 
 app.get('/prijava', [checkLogin, getMsg], (req, res) => {
+  if (res.locals.user) return res.redirect('/');
   res.render('pages/prijava');
 });
 
@@ -199,7 +228,7 @@ app.get('/odjava', [checkLogin, getMsg], async (req, res) => {
   const removedNo = await db.sessions.removeAsync({ session: res.locals.session.session });
   console.log(`removed ${removedNo} session documents.`);
 
-  // res.clearCookie('login'); // niti ni potrebno ..
+  res.clearCookie('login'); // niti ni potrebno ..
   res.redirect('/prijava/?msg=' + encodeURIComponent('vade in pace!'));
 });
 
@@ -214,7 +243,8 @@ app.post('/prijava', async (req, res) => {
       await db.sessions.insert({ usr: user.usr, session });
 
       res.cookie('login', user.usr + ';' + session);
-      return res.redirect('/?msg=' + encodeURIComponent('salve!'));
+      const msg = user.admin ? 'salve, rex!' : 'salve!';
+      return res.redirect('/?msg=' + encodeURIComponent(msg));
     }
 
     // uporabnik obstaja, toda napačno geslo
@@ -324,8 +354,8 @@ async function checkDuplicates() {
   const entries = await db.files.find({});
   const duplicates = entries.filter((e) => entries.some((e2) => e !== e2 && e.md5 === e2.md5)).map((e) => e.id);
 
-  await db.files.update({ id: { $in: duplicates } }, { $set: { flags: { duplicate: true } } }, { multi: true });
-  await db.files.update({ id: { $nin: duplicates } }, { $unset: { flags: { duplicate: false } } }, { multi: true });
+  await db.files.update({ id: { $in: duplicates } }, { $set: { 'flags.duplicate': true } }, { multi: true });
+  await db.files.update({ id: { $nin: duplicates } }, { $unset: { 'flags.duplicate': true } }, { multi: true });
   return duplicates;
 }
 

@@ -7,14 +7,32 @@
     text-align: right;
     width: 100%;
 
-    z-index: -1;
+    opacity: 0.2;
   }
 
-  footer span {
-    opacity: 0.2;
+  footer span:hover {
+    text-decoration: underline;
+    cursor: pointer;
   }
 </style>
 
 <footer>
-  <span><%- new Date().getFullYear() %> | vodnibivol</span>
+  <%- new Date().getFullYear() %> | <span id="admin">vodnibivol</span>
 </footer>
+
+<script>
+  (function() {
+    const mailInfo = `<a href="mailto:vodnibivol@gmail.com?subject=Predlog za Knjižarno!">vodnibivol@gmail.com</a>`
+    const msg = `\
+      stran sem naredil za pomoč pri raziskovanju in
+      iskanju študijskega gradiva. za vse predloge,
+      napake, spremembe .. piši na: ${mailInfo}.
+
+      veliko uspehov in veselja pri uporabi!
+      filip`;
+
+    $('#admin').onclick = (e) => {
+      Modal.alt({ msg, html: true });
+    }
+  })()
+</script>

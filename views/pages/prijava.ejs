@@ -21,14 +21,6 @@
       input.txt:focus-within, input.txt:not(:placeholder-shown) {
         border: 1px solid;
       }
-      
-      input[type='submit'] {
-        background: lightgray;
-      }
-
-      input[type='submit']:active {
-        background: gray;
-      }
 
       input {
         width: 100%;
@@ -43,7 +35,7 @@
 
       .links, .links a {
         font-size: 12px;
-        color: rgb(85, 26, 139);
+        /* color: rgb(85, 26, 139); */
       }
     </style>
   </head>
@@ -54,18 +46,30 @@
       <img src="/public/img/alexand.jpg" alt="medieval schola">
       <h2>prijava</h2>
       <form action="/prijava" method="post">
-        <input class="txt" type="text" placeholder="uporabnik" name="usr" id="usr" autocomplete="off" required />
+        <input class="txt" type="text" placeholder="uporabniško ime" name="usr" id="usr" autocomplete="off" required />
         <br>
-        <input class="txt" type="password" placeholder="geslo" name="pwd" id="pwd" autocomplete="off" required />
+        <input class="txt" type="password" minlength="6" placeholder="geslo" name="pwd" id="pwd" autocomplete="off" required />
         <br>
         <br>
         <input type="submit" value="ok" />
       </form>
 
-      <p class="links"><a href="#">pozabljeno geslo?</a> | <a href="/registracija">registracija</a></p>
+      <p class="links"><a href="/pozabljivcek">pozabljeno geslo?</a> | <a href="/registracija">registracija</a></p>
     </div>
 
-    <%- include("../partials/msg") %>
+    <script>
+      $('a[href="/pozabljivcek"]').onclick = (e) => {
+        e.preventDefault();
+        Modal.alt({
+          msg: `storitev žal še ni na voljo .. probaj
+            se spomniti!`,
+        })
+      }
+
+      // $('.container').onclick = ({target:t}) => $('input#usr').select();
+      $('input#usr').select();
+    </script>
+
     <%- include("../partials/footer") %>
   </body>
 </html>

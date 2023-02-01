@@ -3,29 +3,42 @@
   font-family: Courier, Menlo, Consolas, monospace;
 }
 
-::selection {
-  background: lightpink;
-}
-
 html,
 body {
-  height: 100%;
+  min-height: 100%;
   margin: 0;
   padding: 0;
 }
 
 body {
   background: ivory;
-  padding-top: 4rem;
+  padding-top: 3rem;
   font-size: 14px;
 }
 
-a.black {
-  text-decoration: none;
-  color: black;
+// --- DEFAULT ELEMENT STYLES
 
-  &:hover {
-    text-decoration: underline;
+::selection {
+  background: lightpink;
+}
+
+a {
+  $onvisited: #551a8b; // default onvisited color
+
+  color: $onvisited;
+  cursor: pointer;
+
+  &:active {
+    color: darken($onvisited, 15%);
+  }
+
+  &.black {
+    text-decoration: none;
+    color: black;
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }
 
@@ -33,15 +46,57 @@ em {
   color: #bbb;
 }
 
-input:not([type="file"]),
+table {
+  background: white;
+  border: 1px solid;
+
+  th,
+  td {
+    border: 1px solid;
+    text-align: start;
+    padding: 1px 3px;
+  }
+}
+
+// --- INPUT
+
+label {
+  font-weight: bold;
+}
+
+input[type='text'],
+input[type='password'],
+input[type='email'],
+input[type='button'],
+input[type='submit'],
 button {
-  height: 20px;
-  border-radius: 0;
   appearance: none;
+  height: 20px;
   padding: 2px 6px;
   border: 1px solid;
+  border-radius: 0;
   outline: none;
   font-size: 12px;
+}
+
+textarea {
+  font-size: 12px;
+}
+
+button,
+input[type='button'],
+input[type='submit'] {
+  cursor: pointer;
+  font-weight: bold;
+  background: #ccc;
+
+  &:active:not([disabled]) {
+    background: #bbb;
+  }
+
+  &[disabled] {
+    cursor: default;
+  }
 }
 
 textarea {
@@ -57,19 +112,12 @@ textarea {
   }
 }
 
-label {
-  font-weight: bold;
-}
-
-button,
-input[type='submit'] {
-  cursor: pointer;
-  font-weight: bold;
-}
+// --- CLASSES
 
 .container {
+  z-index: 10;
   width: fit-content;
-  margin: 4rem auto;
+  margin: 4rem auto 6rem auto;
   background: #f7f7f7;
   border: 1px solid black;
   padding: 2rem;
@@ -79,21 +127,4 @@ input[type='submit'] {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-table {
-  background: white;
-
-  th,
-  td {
-    text-align: start;
-    padding: 1px 3px;
-  }
-}
-
-table,
-th,
-td {
-  border: 1px solid black;
-  // border-collapse: collapse;
 }

@@ -22,17 +22,15 @@
       input[type="email"]:focus-within {
         border: 1px solid;
       }
-      
-      input[type='submit'] {
-        background: lightgray;
-      }
-
-      input[type='submit']:not(:disabled):active {
-        background: gray;
-      }
 
       h2 {
         margin-top: 0;
+      }
+
+      sup {
+        font-size: 13px;
+        color: #bbb;
+        cursor: pointer;
       }
     </style>
   </head>
@@ -41,16 +39,23 @@
 
     <div class="container">
       <!-- <img src="/public/img/silentivm.jpg" alt="medieval schola"> -->
-      <h2>registracija</h2>
+      <h2>registracija<sup>[?]</sup></h2>
       <form action="#" method="post">
         <input type="email" placeholder="miska@malahiska.com" name="email" id="email" autocomplete="off" required />
         <input type="submit" value="ok" />
       </form>
     </div>
 
-    <%- include("../partials/msg") %>
-
     <script>
+      $('sup').onclick = (e) => {
+        Modal.alt({
+          msg: `na e-poštni naslov boš prejel link,
+                s katerim se lahko registriraš.
+
+                link je veljaven 24 ur.`,
+        })
+      }
+
       $('form').onsubmit = (e) => {
         e.preventDefault();
         

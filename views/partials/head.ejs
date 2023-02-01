@@ -5,6 +5,20 @@
 <link rel="shortcut icon" href="/public/img/k.png" type="image/x-icon" />
 <title><%= title %> | knjižarna</title>
 
+<% if (user?.admin) { %>
+  <style>
+    body {
+      background: rgba(224, 201, 255, 0.28) !important;
+    }
+  </style>
+<% } else if (user) { %>
+  <style>
+    body {
+      background: rgba(201, 255, 228, 0.28) !important;
+    }
+  </style>
+<% }; %>
+
 <script>
   // GLOBAL UTILITY FUNCTIONS
   const $ = (sel) => document.querySelector(sel);
@@ -29,16 +43,6 @@
   }
 </script>
 
-<% if (user?.admin) { %>
-  <style>
-    body {
-      background: rgba(224, 201, 255, 0.28) !important;
-    }
-  </style>
-<% } else if (user) { %>
-  <style>
-    body {
-      background: rgba(201, 255, 228, 0.28) !important;
-    }
-  </style>
-<% }; %>
+<%- include("../partials/msg") %>
+<%- include("../partials/modal") %>
+<%- include("../partials/miske") %>

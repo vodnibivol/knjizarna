@@ -42,13 +42,13 @@
     <th>avtor</th>
     <th>naslov</th>
     <th>leto</th>
-    <th>velikost</th>
+    <th>naložil</th>
   </thead>
 
   <tbody>
     <% for (let res of results) { %>
     <tr>
-      <% if (res.flags?.deleted) { %>
+      <% if (res.flags?.delete) { %>
         <td style="background: lightpink;">
       <% } else if (res.flags?.missing) { %>
         <td style="background: bisque;">
@@ -59,14 +59,19 @@
       <% }; %>
       <%- res.id %>
       </td>
-      <td><%- res.author || '-' %></td>
+      <td>
+        <a class="black" href="/tekst/<%- res.id %>">
+          <%- res.author || '-' %>
+        </a>
+      </td>
+      <!-- <td><%- res.author || '-' %></td> -->
       <td>
         <a class="black" href="/tekst/<%- res.id %>">
           <%- res.title %>
         </a>
       </td>
       <td><%- res.year || '-' %></td>
-      <td><%- res.sizeStr || '-' %></td>
+      <td><%- res.uploadedBy || '-' %></td>
     </tr>
     <% } %>
   </tbody>
