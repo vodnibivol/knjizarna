@@ -3,3 +3,4 @@ db/
 public/pdf/
 *.DS_Store
 .env
+public/img/thumbs/
