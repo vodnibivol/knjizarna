@@ -5,17 +5,48 @@
     
     <style>
       .container {
-        width: 500px;
+        min-width: 500px;
+        max-width: 800px;
+        width: min-content;
+      }
+
+      .row {
+        position: relative;
+        display: flex;
+        /* border: 2px solid blue; */
+        margin-bottom: 1rem;
+      }
+      
+      div.thumb {
+        position: relative;
+        margin-left: 3rem;
+        flex-grow: 1;
+        /* text-align: center; */
+
+        display: flex;
+        place-content: center;
+        /* place-items: center; */
+      }
+
+      img#thumb {
+        height: 222px;
+        border: thick ridge;
       }
 
       .tables {
         max-width: 300px;
+        flex-shrink: 0;
+        /* width: 100%; */
         width: max-content;
       }
 
       table {
         margin-bottom: 1rem;
         width: 100%;
+      }
+
+      table:last-of-type {
+        margin-bottom: 0;
       }
 
       tbody td:nth-child(1) {
@@ -27,6 +58,7 @@
       .opis {
         font-style: italic;
         color: #777;
+        white-space: pre-line;
       }
       </style>
 
@@ -51,46 +83,50 @@
 
       <h2><%= entry.author || '<Neznano>' %>: <%= entry.title %></h2>
 
-      <div class="tables">
-        <% const tableOne = {
-          avtor: entry.author,
-          naslov: entry.title,
-          kraj: entry.place,
-          založba: entry.publisher,
-          letnica: entry.year,
-        }; %> 
-        <%- include("../partials/table-vertical", { obj: tableOne }) %> 
-        
-        <% const tableTwo = {
-          id: entry.id,
-          velikost: entry.sizeStr,
-          naložil: entry.uploadedBy,
-          uredil: entry.lastEdit ? `<a id="edits" class="black">${entry.lastEdit.user}</a>` : null,
-          // flags: JSON.stringify(entry.flags),
-        }; %> 
-        
-        <%# if (entry.lastEdit) {
-          tableTwo.uredil = `<a id="edits" class="black" href="#">${entry.lastEdit.user}</a>`;
-        }; %>
+      <div class="row">
+        <div class="tables">
+          <% const tableOne = {
+            avtor: entry.author,
+            naslov: entry.title,
+            kraj: entry.place,
+            založba: entry.publisher,
+            letnica: entry.year,
+          }; %> 
+          <%- include("../partials/table-vertical", { obj: tableOne }) %> 
+          
+          <% const tableTwo = {
+            id: entry.id,
+            velikost: entry.sizeStr,
+            naložil: entry.uploadedBy,
+            uredil: entry.lastEdit ? `<a id="edits" class="black">${entry.lastEdit.user}</a>` : null,
+            // flags: JSON.stringify(entry.flags),
+          }; %> 
+          
+          <%# if (entry.lastEdit) {
+            tableTwo.uredil = `<a id="edits" class="black" href="#">${entry.lastEdit.user}</a>`;
+          }; %>
 
-        <%- include("../partials/table-vertical", { obj: tableTwo }) %>
-        
-        <% if (entry.lastEdit) { %>
-          <script>
-            $('#edits').onclick = (e) => {
-              e.preventDefault();
-              Modal.alt({
-                html: true,
-                msg: `\
-                <b>zadnji spremenil</b>: <%- entry.lastEdit?.user %>
-                <b>datum</b>: <%- new Date(entry.updatedAt).toLocaleString("sl") %>
-                <b>opis sprememb</b>: <%- entry.lastEdit?.edits %>
-                <b>vir</b>: <%- entry.lastEdit?.source %>`
-              });
-            };
-          </script>
-        <% }; %>
+          <%- include("../partials/table-vertical", { obj: tableTwo }) %>
+          
+          <% if (entry.lastEdit) { %>
+            <script>
+              $('#edits').onclick = (e) => {
+                e.preventDefault();
+                Modal.alt({
+                  html: `\
+                  <b>zadnji spremenil</b>: <%- entry.lastEdit?.user %>
+                  <b>datum</b>: <%- new Date(entry.lastEdit.timestamp).toLocaleString('sl') %>
+                  <b>opis sprememb</b>: <%- entry.lastEdit?.edits %>
+                  <b>vir</b>: <%- entry.lastEdit?.source %>`.replace(/\n/g, '<br>')
+                });
+              };
+            </script>
+          <% }; %>
 
+        </div>
+        <div class="thumb">
+          <img src="<%- entry.thumb %>" id="thumb" alt="thumbnail">
+        </div>
       </div>
       
       <% if (entry.description) { %>
@@ -103,6 +139,9 @@
         <% if (user?.usr) { %>
           | <a href="/uredi/<%- entry.id %>" id="edit"><%- user?.admin || user?.usr === entry.uploadedBy ? 'uredi' : 'uredi*' %></a>
           | <a href="#" id="remove"><%- user?.admin || user?.usr === entry.uploadedBy ? 'izbriši' : 'izbriši*' %></a>
+          <% } %>
+          <% if (user?.admin && entry.flags?.delete) { %>
+            | <a href="/undelete/<%- entry.id %>" id="remove">odizbriši</a>
         <% } %>
       </p>
     </div>

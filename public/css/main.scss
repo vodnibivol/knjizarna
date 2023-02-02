@@ -100,16 +100,10 @@ input[type='submit'] {
 }
 
 textarea {
-  border: 2px solid black;
   resize: none;
   overflow-y: scroll;
   outline: none;
   padding: 2px 6px;
-  // font-weight: bold; // raje posebej
-
-  &:focus-within {
-    background: lightgoldenrodyellow;
-  }
 }
 
 // --- CLASSES

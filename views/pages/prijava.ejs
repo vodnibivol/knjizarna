@@ -18,7 +18,7 @@
         border: 1px dashed;
       }
       
-      input.txt:focus-within, input.txt:not(:placeholder-shown) {
+      input.txt:focus, input.txt:not(:placeholder-shown) {
         border: 1px solid;
       }
 
@@ -61,13 +61,13 @@
       $('a[href="/pozabljivcek"]').onclick = (e) => {
         e.preventDefault();
         Modal.alt({
-          msg: `storitev žal še ni na voljo .. probaj
-            se spomniti!`,
+          msg: `\
+          storitev žal še ni na voljo .. probaj
+          se spomniti!`,
         })
       }
 
-      // $('.container').onclick = ({target:t}) => $('input#usr').select();
-      $('input#usr').select();
+      window.onload = () => $('input#usr').select();
     </script>
 
     <%- include("../partials/footer") %>

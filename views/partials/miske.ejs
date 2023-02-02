@@ -1,5 +1,5 @@
 <style>
-  .miska {
+  #miske .miska {
     position:fixed;
     z-index: -1;
     top: 0;
@@ -38,7 +38,7 @@
       constructor(offset) {
         if (Math.random() < 0.5) {
           this.dir = -1;
-          this.x = window.innerWidth; // px
+          this.x = document.body.clientWidth; // px
         } else {
           this.dir = 1;
           this.x = -50; // px
@@ -50,7 +50,7 @@
       update() {
         this.x += 5 * this.dir;
         this.el.style.transform = `translate3d(${this.x}px, ${this.y}px, 0)`;
-        if ((this.dir === 1 && this.x > window.innerWidth) || (this.dir === -1 && this.x < -50)) {
+        if ((this.dir === 1 && this.x > document.body.clientWidth) || (this.dir === -1 && this.x < -50)) {
           this.el.remove();
           miske.splice(miske.indexOf(this),1);
         }

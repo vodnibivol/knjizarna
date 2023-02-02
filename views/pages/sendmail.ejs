@@ -19,7 +19,7 @@
         /* border: 1px dashed; */
       }
       
-      input[type="email"]:focus-within {
+      input[type="email"]:focus {
         border: 1px solid;
       }
 
@@ -38,7 +38,6 @@
     <%- include("../partials/nav") %>
 
     <div class="container">
-      <!-- <img src="/public/img/silentivm.jpg" alt="medieval schola"> -->
       <h2>registracija<sup>[?]</sup></h2>
       <form action="#" method="post">
         <input type="email" placeholder="miska@malahiska.com" name="email" id="email" autocomplete="off" required />
@@ -49,10 +48,11 @@
     <script>
       $('sup').onclick = (e) => {
         Modal.alt({
-          msg: `na e-poštni naslov boš prejel link,
-                s katerim se lahko registriraš.
+          msg: `\
+          na e-poštni naslov boš prejel link,
+          s katerim se lahko registriraš.
 
-                link je veljaven 24 ur.`,
+          link je veljaven 24 ur.`,
         })
       }
 

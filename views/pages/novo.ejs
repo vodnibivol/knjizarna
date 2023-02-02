@@ -1,19 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <%- include("../partials/head", { title: entry.id ? 'urejanje' : 'novo' }) %>
+    <%- include('../partials/head', { title: entry.id ? 'urejanje' : 'novo' }) %>
 
     <style>
-      h2 {
+      body {
+        /* very light blue */
+        background: rgb(240, 250, 255);
+      }
+
+      .container {
+        width: fit-content;
+      }
+
+      form h2 {
         margin-top: 0.5rem;
       }
+
       form input {
         margin-bottom: 5px;
         display: block;
         width: 200px;
       }
 
-      form input:focus-within {
+      form input:focus, form textarea:focus {
         background: lightgoldenrodyellow;
       }
 
@@ -21,30 +31,21 @@
         background: lightgoldenrodyellow;
       }
 
-      input[type='submit'] {
+      form input[type='submit'] {
         margin-top: 10px;
         /* background: lightgreen; */
       }
 
-      input[type='file'] {
+      form input[type='file'] {
         /* padding: 10rem 1rem; */
         border: none;
       }
 
-      input[type='submit'] {
+      form input[type='submit'] {
         margin-top: 1.5rem;
       }
 
-      .container {
-        width: fit-content;
-      }
-
-      body {
-        /* very light blue */
-        background: rgb(240, 250, 255);
-      }
-
-      textarea {
+      form textarea {
         width: 200px;
         /* height: 34px; */
         border: 1px solid;
@@ -82,14 +83,14 @@
         <label for="description">opis</label>
         <textarea name="description" id="description" rows="2" data-prev="<%- entry.description %>" placeholder="strani, opis datoteke .."><%- entry.description %></textarea>
         
-        <% if (entry.id && user?.usr !== entry.uploadedBy) { %>
-          <br>
-          <hr>
+        <br>
+        <hr>
+        <% if (entry.id) { %>
           <label for="edits">opis sprememb</label>
           <input type="text" name="edits" id="edits" placeholder="typo; dodal(a) naslov .." required>
-          <label for="source">vir</label>
+        <% }; %>
+          <label for="source">vir podatkov</label>
           <input type="text" name="source" id="source" placeholder="cobiss; <url>; dokument .." required>
-        <% } %>
 
         <input type="hidden" name="id" value="<%- entry.id %>" />
 
@@ -105,6 +106,8 @@
         let isSubmitting = false;
 
         $("form").oninput = function({ target:t }) {
+          if (t.matches('input#edits, input#source')) return;
+
           if (t.dataset.prev !== t.value) {
             t.classList.add('changed');
           } else {
@@ -115,42 +118,17 @@
           $('form input[type="submit"]').disabled = !isModified;
         }
 
-        $('form').onsubmit = function(e) {
-          window.onbeforeunload = null;
-
-//           e.preventDefault();
-
-//           const changes = [...$('form').children].filter(({ value, dataset:d }) => d.prev && d.prev !== value);
-//           console.log(changes);
-//           Modal.alt({
-//             html: true,
-//             msg: `\
-// <label for="spremembe">opis sprememb</label>
-// <input type="text" name="spremembe" id="spremembe" style="width:350px;" placeholder="'typo', 'dodal(a) naslov' ..">
-// <label for="vir">vir</label>
-// <input type="text" name="vir" id="vir" style="width:350px;" placeholder="cobiss, url, dokument, knjiga ..">`,
-//             onConfirm: () => 0,
-//             onCancel: () => 0,
-//           })
-        }
-
-        window.onbeforeunload = function(e) {
-          if (isModified) {
-            e.preventDefault();
-            return 'imaš neshranjene spremembe!';
-          }
-        }
-
         // --- load msg
 
-        const msg = `\
+        const html = `\
         polja, za katera nisi prepričan, raje pusti prazna.
         pomagaj si z iskanjem COBISS:
-
-        <a href="https://plus.cobiss.net/cobiss/si/sl/bib/search" target="_blank">https://plus.cobiss.net/</a>`;
+        
+        <a href="https://plus.cobiss.net/cobiss/si/sl/bib/search"\
+         target="_blank">https://plus.cobiss.net/</a>`.replace(/\n/g, '<br>');
 
         window.onload = (e) => {
-          Modal.alt({ msg, html: true, remember: 'novo_opomnik' });
+          Modal.alt({ html, remember: 'novo_opomnik' });
         }
       })()
     </script>

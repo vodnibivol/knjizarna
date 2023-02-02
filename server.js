@@ -6,9 +6,9 @@ const fileUpload = require('express-fileupload');
 const cookieParser = require('cookie-parser');
 const Datastore = require('@seald-io/nedb');
 
-// const { DB } = require('./modules/db');
 const { digest, formatBytes } = require('./modules/utils');
 const { sendConfirmationEmail } = require('./modules/email');
+const { convertpdf } = require('./modules/resize');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -38,6 +38,30 @@ checkDuplicates();
 
 // --- ROUTES
 
+// app.get('/resize', async (req, res) => {
+//   const outputFilename = 'output.jpg';
+//   const output = await convertpdf('harris.pdf', outputFilename);
+//   console.log(output);
+//   res.sendFile(path.resolve(__dirname, outputFilename));
+// });
+
+// app.get('/asd', async (req, res) => {
+//   const entries = await db.files.find({});
+
+//   entries.forEach(async (entry, index) => {
+//     // generate image
+//     // return;
+//     const thumbPath = '/public/img/thumbs/' + entry.id + '.jpg';
+//     const pathname = path.resolve(__dirname, 'db', 'pdf', entry.id + '.pdf');
+//     await convertpdf(pathname, path.resolve(__dirname + thumbPath));
+//     await db.files.update({ id: entry.id }, { $set: { thumb: thumbPath } });
+
+//     if (index === entries.length - 1) {
+//       res.send(entries);
+//     }
+//   });
+// });
+
 app.get('/', [checkLogin, getMsg], (req, res) => {
   res.render('pages/domov', { title: 'domov' });
 });
@@ -54,7 +78,7 @@ app.get('/iskanje', [checkLogin, getMsg], async (req, res) => {
         { publisher: { $regex: reg } },
       ],
     })
-    .sort({ title: 1 });
+    .sort({ author: 1, title: 1 });
 
   results.forEach((r) => (r.sizeStr = formatBytes(r.size))); // format bytes
   res.render('pages/iskanje', { title: 'iskanje', query: req.query.q, results });
@@ -83,7 +107,7 @@ app.get('/ogled/:id', async (req, res, next) => {
   const file = await db.files.findOne({ id });
   if (file) {
     const fpath = path.resolve(__dirname, 'db', 'pdf', file.filename);
-    if (!fs.existsSync(fpath)) return next();
+    if (!fs.existsSync(fpath)) return res.end('datoteka je izgubljena. prosim, kontaktiraj: <vodnibivol@gmail.com>');
     // if (Math.random() < 0.2) return res.sendFile(path.resolve(__dirname, 'public', 'img', 'db.png'));
     return res.sendFile(fpath);
   }
@@ -139,25 +163,23 @@ function getMsg(req, res, next) {
 
 app.post('/publish', checkLogin, async (req, res) => {
   let info = {
-    id: req.body.id,
-    author: req.body.author,
-    title: req.body.title,
-    year: req.body.year,
-    publisher: req.body.publisher,
-    place: req.body.place,
-    description: req.body.description,
+    id: req.body.id.trim(),
+    author: req.body.author.trim(),
+    title: req.body.title.trim(),
+    year: req.body.year.trim(),
+    publisher: req.body.publisher.trim(),
+    place: req.body.place.trim(),
+    description: req.body.description.trim(),
   };
 
   // EDITS
-  if (req.body.edits) {
-    info.lastEdit = {
-      user: res.locals.user.usr,
-      edits: req.body.edits,
-      source: req.body.source,
-    };
-  }
-
-  console.log(info);
+  // TODO: napravi history
+  info.lastEdit = {
+    user: res.locals.user.usr,
+    edits: req.body.edits || 'prva objava',
+    source: req.body.source,
+    timestamp: new Date(),
+  };
 
   // FIRST TIME: uploading file
   if (req.files) {
@@ -188,6 +210,12 @@ app.post('/publish', checkLogin, async (req, res) => {
 
     file.mv(pathname, async function (err) {
       if (err) return res.status(500).send(err);
+
+      // generate image
+      const thumbPath = '/public/img/thumbs/' + id + '.jpg';
+      await convertpdf(pathname, path.resolve(__dirname + thumbPath));
+      info.thumb = thumbPath;
+
       await db.files.insert(info);
       checkDuplicates();
       return res.redirect('/tekst/' + info.id);
@@ -210,11 +238,21 @@ app.get('/delete/:id', [checkLogin, getMsg], async (req, res) => {
   }
 
   fs.unlinkSync(path.resolve(__dirname, 'db', 'pdf', entry.filename));
+  if (entry.thumb) fs.unlinkSync(path.resolve(__dirname + entry.thumb));
+
   await db.files.remove({ id: req.params.id });
   checkDuplicates();
 
   const msg = encodeURIComponent('izbrisano: ' + entry.title); // + entry.naslov
   res.redirect('/?msg=' + msg);
+});
+
+app.get('/undelete/:id', [checkLogin, getMsg], async (req, res) => {
+  if (res.locals.user.admin) {
+    await db.files.update({ id: req.params.id }, { $unset: { 'flags.delete': true } });
+    return res.redirect(`/tekst/${req.params.id}/?msg=${encodeURIComponent('odizbrisano.')}`);
+  }
+  return res.status(403).redirect('/?msg=' + encodeURIComponent('nimaš dostopa ..'));
 });
 
 // --- UPORABNIKI IN PRIJAVA
@@ -225,7 +263,7 @@ app.get('/prijava', [checkLogin, getMsg], (req, res) => {
 });
 
 app.get('/odjava', [checkLogin, getMsg], async (req, res) => {
-  const removedNo = await db.sessions.removeAsync({ session: res.locals.session.session });
+  const removedNo = await db.sessions.removeAsync({ session: res.locals.session?.session });
   console.log(`removed ${removedNo} session documents.`);
 
   res.clearCookie('login'); // niti ni potrebno ..
@@ -324,7 +362,7 @@ app.post('/registracija', checkLogin, async (req, res) => {
   // check if username taken
   const existUser = await db.users.findOne({ usr }); // user with same username
   if (existUser) {
-    return res.render('pages/registracija', { email, usr, ref, msg: `uporabniško ime '${usr}' je žal zasedeno:(` });
+    return res.render('pages/registracija', { email, usr, ref, msg: `uporabniško ime '${usr}' je žal zasedeno :(` });
   }
 
   // mail ok, username ok, check password
@@ -338,8 +376,6 @@ app.post('/registracija', checkLogin, async (req, res) => {
   await db.users.insert({ usr, email, pwd: digest(pwd) });
   res.redirect('/prijava?msg=' + encodeURIComponent('uspešna registracija!'));
 });
-
-// NOTE: HERE
 
 // --- HANDLES
 
@@ -361,7 +397,7 @@ async function checkDuplicates() {
 
 // --- ERRORS
 
-app.use('*', checkLogin, (req, res) => {
+app.use('*', [checkLogin, getMsg], (req, res) => {
   res.render('pages/404');
 });
 

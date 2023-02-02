@@ -23,16 +23,16 @@
 <script>
   (function() {
     const mailInfo = `<a href="mailto:vodnibivol@gmail.com?subject=Predlog za Knjižarno!">vodnibivol@gmail.com</a>`
-    const msg = `\
+    const html = `\
       stran sem naredil za pomoč pri raziskovanju in
       iskanju študijskega gradiva. za vse predloge,
       napake, spremembe .. piši na: ${mailInfo}.
-
+      
       veliko uspehov in veselja pri uporabi!
-      filip`;
+      filip`.replace(/\n/g, '<br>');
 
     $('#admin').onclick = (e) => {
-      Modal.alt({ msg, html: true });
+      Modal.alt({ html });
     }
   })()
 </script>

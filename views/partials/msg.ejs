@@ -45,7 +45,7 @@
 
     function _showAndRemoveSearch() {
       const u = new URL(location.href);
-      const msg = u.searchParams.get('msg') || "<%- msg %>";
+      const msg = u.searchParams.get('msg') || '<%- typeof msg !== undefined ? msg : "" %>';
       if (msg) {
         show(msg);
         setTimeout(_hide, 8 * 1000);

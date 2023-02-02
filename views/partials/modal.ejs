@@ -19,11 +19,6 @@
     border: thick ridge;
   }
 
-  #modal span.msg {
-    white-space: pre-line;
-    /* ohrani line-wrape, izbriše padding na začetku */
-  }
-
   #modal .buttons {
     text-align: end;
   }
@@ -52,7 +47,7 @@
 
     $('#modal').onclick = function ({ target: t }) {
       if (t.matches('button.ok')) {
-        if ($('#remember input').checked) localStorage.setItem(_lsKey, 1);
+        if (_lsKey && $('#remember input').checked) localStorage.setItem(_lsKey, 1);
         _onConfirm && _onConfirm();
         _closeModal();
       } else if (t.matches('button.cancel')) {
@@ -76,7 +71,7 @@
     let _onConfirm, _onCancel, _lsKey;
     
     function alt(options = {}) {
-      if (options.html) $('#modal .msg').innerHTML = options.msg;
+      if (options.html) $('#modal .msg').innerHTML = options.html;
       else $('#modal .msg').innerText = options.msg;
       _onConfirm = options.onConfirm || eval;
       _onCancel = options.onCancel;
@@ -84,7 +79,7 @@
       $('#modal button.cancel').style.display = options.onCancel ? 'inline-block' : 'none';
       $('#modal #remember').style.display = options.remember ? 'inline-block' : 'none';
       
-      if (localStorage.getItem(options.remember)) _onConfirm();
+      if (options.remember && localStorage.getItem(options.remember)) _onConfirm();
       else _openModal();
     }
 
