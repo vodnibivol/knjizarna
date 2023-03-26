@@ -14,7 +14,11 @@
         position: relative;
         display: flex;
         /* border: 2px solid blue; */
-        margin-bottom: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      h2 {
+        margin-bottom: 2rem;
       }
       
       div.thumb {
@@ -60,7 +64,7 @@
         color: #777;
         white-space: pre-line;
       }
-      </style>
+    </style>
 
     <% if (entry.flags?.delete) { %>
     <style>
@@ -81,7 +85,12 @@
         <em>dokument je za izbris označil: '<%- entry.flags.delete %>'.</em>
       <% }; %>
 
-      <h2><%= entry.author || '<Neznano>' %>: <%= entry.title %></h2>
+      <% if (entry.entryTitle) { %>
+        <h2><%- entry.entryTitle %></h2>
+      <% } else { %>
+        <h2><%= entry.author || '<Neznano>' %>: <%= entry.title %></h2>
+      <% }; %>
+       
 
       <div class="row">
         <div class="tables">
@@ -132,12 +141,12 @@
       <% if (entry.description) { %>
         <p class="opis"><%= entry.description %></p>
       <% } %>
-      ---
+      <!-- <p style="margin-bottom:2rem;">---</p> -->
       <p>
         <a href="/ogled/<%- entry.id %>">ogled</a> |
         <a href="/ogled/<%- entry.id %>" download="<%- entry.originalFilename %>">download</a>
         <% if (user?.usr) { %>
-          | <a href="/uredi/<%- entry.id %>" id="edit"><%- user?.admin || user?.usr === entry.uploadedBy ? 'uredi' : 'uredi*' %></a>
+          | <a href="/uredi/<%- entry.id %>" id="edit">uredi</a>
           | <a href="#" id="remove"><%- user?.admin || user?.usr === entry.uploadedBy ? 'izbriši' : 'izbriši*' %></a>
           <% } %>
           <% if (user?.admin && entry.flags?.delete) { %>

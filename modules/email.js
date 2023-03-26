@@ -20,7 +20,7 @@ async function sendConfirmationEmail(recipient, ref, expires) {
   const expirationStr = new Intl.DateTimeFormat('sl', { timeStyle: 'medium', dateStyle: 'long' }).format(expires);
 
   await transporter.sendMail({
-    from: '"knjižarna 📖" <test@vodnibivol.org>',
+    from: `"knjižarna 📖" <${process.env.MAIL_USER}>`,
     to: recipient,
     subject: 'potrditev e-poštnega naslova',
     text: `potrdi nov račun! odpri povezavo: http://localhost:3000/registracija?ref=${ref}\npovezava je veljavna do: ${expirationStr}`,

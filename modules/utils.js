@@ -16,9 +16,17 @@ function formatBytes(bytes, decimals = 1) {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 }
 
+function fromEntries(arr) {
+  return arr.reduce((acc, [key, val]) => {
+    acc[key] = acc[key] ? acc[key] + ', ' + val : val;
+    return acc;
+  }, {});
+}
+
 module.exports = {
   timestamp,
   randomHash,
   digest,
   formatBytes,
+  fromEntries,
 };

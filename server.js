@@ -4,14 +4,15 @@ const fs = require('fs');
 const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload');
 const cookieParser = require('cookie-parser');
+const fetch = require('node-fetch');
 const Datastore = require('@seald-io/nedb');
 
-const { digest, formatBytes } = require('./modules/utils');
+const { digest, formatBytes, fromEntries } = require('./modules/utils');
 const { sendConfirmationEmail } = require('./modules/email');
 const { convertpdf } = require('./modules/resize');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3300;
 
 app.use('/public', express.static('public'));
 app.set('view engine', 'ejs');
@@ -164,12 +165,16 @@ function getMsg(req, res, next) {
 app.post('/publish', checkLogin, async (req, res) => {
   let info = {
     id: req.body.id.trim(),
+    entryTitle: req.body.entryTitle.trim(),
+
     author: req.body.author.trim(),
     title: req.body.title.trim(),
     year: req.body.year.trim(),
     publisher: req.body.publisher.trim(),
     place: req.body.place.trim(),
     description: req.body.description.trim(),
+
+    ris: req.body.ris.trim(),
   };
 
   // EDITS
@@ -375,6 +380,31 @@ app.post('/registracija', checkLogin, async (req, res) => {
   // mail ok, username free, password is ok => CREATE USER
   await db.users.insert({ usr, email, pwd: digest(pwd) });
   res.redirect('/prijava?msg=' + encodeURIComponent('uspešna registracija!'));
+});
+
+app.get('/api/getCobissData', async (req, res) => {
+  const input = req.query.url;
+
+  const id = input.match(/\d{5,}/)?.[0];
+  if (!id) return res.status(400).json({ success: 0 });
+
+  const metaUrl = 'https://plus.cobiss.net/cobiss/si/sl/bib/risCit/' + id;
+  const r = await fetch(metaUrl);
+  const cit = await r.text();
+
+  if (!cit.startsWith('OK##')) {
+    return res.status(400).json({ success: 0 });
+  }
+
+  const entries = cit
+    .substring(4)
+    .split(/[\n\r]+/)
+    .map((line) => line.split(/[\s\-]{3,}/))
+    .map(([key, val]) => [key, key === 'AU' ? val.replace(/(.+), (.+)/, '$2 $1') : val]);
+
+  const meta = fromEntries(entries); // fromEntries je enak kot Object.fromEntries, samo da ne zanemari, ampak poveže stvari z delimiterjem (", ")
+
+  res.json({ success: 1, data: { ris: meta, risText: cit } });
 });
 
 // --- HANDLES

@@ -67,6 +67,7 @@ label {
 input[type='text'],
 input[type='password'],
 input[type='email'],
+input[type='url'],
 input[type='button'],
 input[type='submit'],
 button {
@@ -101,7 +102,7 @@ input[type='submit'] {
 
 textarea {
   resize: none;
-  overflow-y: scroll;
+  overflow-y: auto;
   outline: none;
   padding: 2px 6px;
 }

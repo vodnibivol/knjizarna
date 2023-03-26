@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <%- include('../partials/head', { title: entry.id ? 'urejanje' : 'novo' }) %>
+    <%- include('../partials/head', { title: !!entry.id ? 'urejanje' : 'novo' }) %>
 
     <style>
       body {
-        /* very light blue */
+        /* very light blue-green */
         background: rgb(240, 250, 255);
       }
 
@@ -20,7 +20,7 @@
       form input {
         margin-bottom: 5px;
         display: block;
-        width: 200px;
+        width: 220px;
       }
 
       form input:focus, form textarea:focus {
@@ -46,10 +46,19 @@
       }
 
       form textarea {
-        width: 200px;
+        width: 220px;
         /* height: 34px; */
         border: 1px solid;
         display: block;
+      }
+
+      /* MODAL */
+      #modal .msg input {
+        width: 360px;
+      }
+
+      #modal .msg input:valid:not(:placeholder-shown) {
+        background: rgb(240, 255, 243);
       }
     </style>
   </head>
@@ -59,14 +68,17 @@
     <div class="container">
       <form action="/publish" method="post" enctype="multipart/form-data" autocomplete="off" spellcheck="false">
         <h2>datoteka</h2>
-        <% if (!entry.id || entry.flags?.missing) { %>
+        <% if (!user?.admin && !entry.id || entry.flags?.missing) { %>
           <input type="file" id="doc" name="doc" accept="application/pdf" required />
         <% } else { %>
         <em>datoteka je že naložena</em>
-        <br /><br />
+        <br><br>
         <% }; %>
 
+        
+
         <% const fields = [
+          { dbName: 'entryTitle', text: 'IME DOKUMENTA', plc: 'Platon: Država (6. knjiga)' },
           { dbName: 'author', text: 'avtor', plc: 'Aristotel' },
           { dbName: 'title', text: 'naslov', plc: 'Nikomahova etika', required: true },
           { dbName: 'place', text: 'kraj', plc: 'Ljubljana' },
@@ -75,6 +87,10 @@
         ]; %> 
 
         <h2>o tekstu</h2>
+        
+        <em>uvozi iz <a href="javascript:showCobissModal()">COBISS</a></em>
+        <br><br>
+
         <% for (let el of fields) { %>
           <label for="<%- el.dbName %>"><%- el.text %></label>
           <input type="text" name="<%- el.dbName %>" id="<%- el.dbName %>" data-prev="<%- entry[el.dbName] %>" placeholder="<<%- el.plc %>>" value="<%- entry[el.dbName] %>" <%- el.required && 'required' %> />
@@ -83,15 +99,16 @@
         <label for="description">opis</label>
         <textarea name="description" id="description" rows="2" data-prev="<%- entry.description %>" placeholder="strani, opis datoteke .."><%- entry.description %></textarea>
         
-        <br>
-        <hr>
+        <br><hr>
         <% if (entry.id) { %>
           <label for="edits">opis sprememb</label>
           <input type="text" name="edits" id="edits" placeholder="typo; dodal(a) naslov .." required>
         <% }; %>
-          <label for="source">vir podatkov</label>
-          <input type="text" name="source" id="source" placeholder="cobiss; <url>; dokument .." required>
 
+        <label for="source">vir podatkov</label>
+        <input type="text" name="source" id="source" placeholder="<url>; znanje; tekst .." required>
+
+        <input type="hidden" name="ris" id="ris" />
         <input type="hidden" name="id" value="<%- entry.id %>" />
 
         <input type="submit" value="<%- (entry.id ? 'shrani' : 'objavi') %>" tabindex="-1" disabled />
@@ -118,7 +135,7 @@
           $('form input[type="submit"]').disabled = !isModified;
         }
 
-        // --- load msg
+        // --- load warning msg
 
         const html = `\
         polja, za katera nisi prepričan, raje pusti prazna.
@@ -131,6 +148,42 @@
           Modal.alt({ html, remember: 'novo_opomnik' });
         }
       })()
+
+      function showCobissModal() {
+        const html = `\
+        <label for="cobiss"><a class="black" target="_blank" href="//plus.cobiss.net">cobiss link</a></label>
+        <input pattern=".+plus.cobiss.net.+\\d{7,}" type="url" id="cobiss" placeholder="https://plus.cobiss.net/cobiss..">
+        `.replace(/\n/g, '<br>');
+
+        Modal.alt({
+          html,
+          onConfirm: async () => {
+            const val = $('#cobiss').value;
+            if (!val) return;
+            if (!/plus.cobiss.net(.*)\d{7,}/.test(val)) return alert("not a url!");
+
+            const res = await fetch('/api/getCobissData?url='+encodeURIComponent(val));
+            const data = await res.json();
+            console.log(data?.data.ris);
+
+            if (data.success === 1) {
+              const { ris, risText } = data.data;
+              $('#author').value = ris.AU;
+              $('#title').value = ris.TI;
+              $('#place').value = ris.CY;
+              $('#publisher').value = ris.PB;
+              $('#year').value = ris.PY;
+              $('#source').value = val;
+              $('#ris').value = risText;
+            }
+
+            [...$('form').querySelectorAll('input')].forEach((c) => c.dispatchEvent(new Event('input', {bubbles:true})))
+            Modal.close();
+          },
+          onCancel: Modal.close,
+          preventClose: true,
+        });
+      }
     </script>
   </body>
 </html>
