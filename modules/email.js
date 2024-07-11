@@ -23,11 +23,11 @@ async function sendConfirmationEmail(recipient, ref, expires) {
     from: `"knjižarna 📖" <${process.env.MAIL_USER}>`,
     to: recipient,
     subject: 'potrditev e-poštnega naslova',
-    text: `potrdi nov račun! odpri povezavo: http://localhost:3000/registracija?ref=${ref}\npovezava je veljavna do: ${expirationStr}`,
+    text: `potrdi nov račun! odpri povezavo: http://localhost:3300/registracija?ref=${ref}\npovezava je veljavna do: ${expirationStr}`,
     html: `\
     <div style="font-family:Courier,monospace;">
       <p>potrdi kreiranje računa! klik na
-        <a href="http://localhost:3000/registracija?ref=${ref}">link</a> :)
+        <a href="http://localhost:3300/registracija?ref=${ref}">link</a> :)
       </p>
       <p style="font-family:Courier,monospace;">povezava je veljavna 24 ur [do: ${expirationStr}]</p>
     </div>`,
