@@ -44,17 +44,17 @@
           font-weight: bold;
         }
       </style>
-      <span><a href="javascript:history.back();" class="home black"> <img src="/public/img/k.png" alt="" />knjižarna</a></span>
+      <span><a href="javascript:history.back();" class="home black"> <img src="/knjizarna/public/img/k.png" alt="" />knjižarna</a></span>
     <% } else { %>
-      <span><a href="/" class="home black"> <img src="/public/img/k.png" alt="" />knjižarna</a></span>
+      <span><a href="/knjizarna/" class="home black"> <img src="/knjizarna/public/img/k.png" alt="" />knjižarna</a></span>
     <% }; %>
   </div>
   <div class="right">
-    <a class="black" href="/novo">novo</a> |
+    <a class="black" href="/knjizarna/novo">novo</a> |
     <% if (user) { %>
-      <a class="black" href="/odjava">odjava (<%- user.usr + (user.admin ? ":admin" : "") %>)</a>
+      <a class="black" href="/knjizarna/odjava">odjava (<%- user.usr + (user.admin ? ":admin" : "") %>)</a>
     <% } else { %>
-      <a class="black" href="/prijava">prijava</a>
+      <a class="black" href="/knjizarna/prijava">prijava</a>
     <% }; %> 
   </div>
 </header>

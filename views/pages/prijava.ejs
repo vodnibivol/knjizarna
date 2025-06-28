@@ -43,7 +43,7 @@
     <%- include("../partials/nav") %>
 
     <div class="container">
-      <img src="/public/img/alexand.jpg" alt="medieval schola">
+      <img src="/knjizarna/public/img/alexand.jpg" alt="medieval schola">
       <h2>prijava</h2>
       <form action="/prijava" method="post">
         <input class="txt" type="text" placeholder="uporabniško ime" name="usr" id="usr" autocomplete="off" required />
@@ -54,11 +54,11 @@
         <input type="submit" value="ok" />
       </form>
 
-      <p class="links"><a href="/pozabljivcek">pozabljeno geslo?</a> | <a href="/registracija">registracija</a></p>
+      <p class="links"><a href="/knjizarna/pozabljivcek">pozabljeno geslo?</a> | <a href="/knjizarna/registracija">registracija</a></p>
     </div>
 
     <script>
-      $('a[href="/pozabljivcek"]').onclick = (e) => {
+      $('a[href="/knjizarna/pozabljivcek"]').onclick = (e) => {
         e.preventDefault();
         Modal.alt({
           msg: `\

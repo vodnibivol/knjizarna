@@ -14,12 +14,14 @@ const { convertpdf } = require('./modules/resize');
 const app = express();
 const PORT = process.env.PORT || 3300;
 
-app.use('/public', express.static('public'));
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json()); // to support JSON-encoded bodies
 app.use(fileUpload());
 app.use(cookieParser());
+
+app.all('/knjizarna/*', editLocalhost);
+app.use('/public/', express.static('public'));
 
 const db = {};
 
@@ -217,7 +219,7 @@ app.post('/publish', checkLogin, async (req, res) => {
       if (err) return res.status(500).send(err);
 
       // generate image
-      const thumbPath = '/public/img/thumbs/' + id + '.jpg';
+      const thumbPath = '/knjizarna/public/img/thumbs/' + id + '.jpg';
       await convertpdf(pathname, path.resolve(__dirname + thumbPath));
       info.thumb = thumbPath;
 
@@ -425,6 +427,20 @@ async function checkDuplicates() {
   return duplicates;
 }
 
+// --- FUNCTIONS
+
+function editLocalhost(req, res, next) {
+  if (isLocalhost(req.hostname)) {
+    req.url = req.url.replace('knjizarna/', '');
+  }
+
+  next();
+}
+
+function isLocalhost(hostname) {
+  return /localhost|192|172/.test(hostname);
+}
+
 // --- ERRORS
 
 app.use('*', [checkLogin, getMsg], (req, res) => {
@@ -436,4 +452,4 @@ app.use((err, req, res, next) => {
   res.end('error 500');
 });
 
-app.listen(PORT, () => console.log('listening on port: ' + PORT));
+app.listen(PORT, () => console.log('server running on : http://localhost:' + PORT + '/'));
