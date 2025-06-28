@@ -166,7 +166,7 @@
           
           Modal.alt({
             msg: 'izbriši zapis?',
-            onConfirm: () => window.location = '/delete/<%- entry.id %>',
+            onConfirm: () => window.location = '/knjizarna/delete/<%- entry.id %>',
             onCancel: () => 0,
           })
         }
@@ -179,7 +179,7 @@
           Modal.alt({
             msg: `dokument je naložil uporabnik '<%- entry.uploadedBy %>'.
               želiš napraviti spremembe?`,
-            onConfirm: () => window.location = '/uredi/<%- entry.id %>',
+            onConfirm: () => window.location = '/knjizarna/uredi/<%- entry.id %>',
             onCancel: () => 0,
           })
         }
@@ -190,7 +190,7 @@
           Modal.alt({
             msg: `dokument je naložil uporabnik '<%- entry.uploadedBy %>'.
               želiš predlagati izbris?`,
-            onConfirm: () => window.location = '/delete/<%- entry.id %>',
+            onConfirm: () => window.location = '/knjizarna/delete/<%- entry.id %>',
             onCancel: () => 0,
           })
         }
