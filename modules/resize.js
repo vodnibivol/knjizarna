@@ -32,9 +32,10 @@ function convertpdf(input, output, opts = {}) {
             result: 'error',
             message: 'Can not write output file.',
           });
+          console.error(err);
         }
 
-        var results = {
+        const results = {
           name: path.basename(output),
           size: fs.statSync(output)['size'] / 1000.0,
           path: output,

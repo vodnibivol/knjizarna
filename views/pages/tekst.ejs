@@ -30,6 +30,8 @@
         display: flex;
         place-content: center;
         /* place-items: center; */
+        border-color: black;
+        color: black;
       }
 
       img#thumb {
@@ -133,9 +135,11 @@
           <% }; %>
 
         </div>
-        <div class="thumb">
-          <img src="/knjizarna/public/img/thumbs/<%- entry.id %>.jpg" id="thumb" alt="thumbnail">
-        </div>
+        <a href="/knjizarna/ogled/<%- entry.id %>">
+          <div class="thumb">
+            <img src="/knjizarna/public/img/thumbs/<%- entry.id %>.jpg" id="thumb" alt="thumbnail">
+          </div>
+        </a>
       </div>
       
       <% if (entry.description) { %>

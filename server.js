@@ -121,7 +121,7 @@ app.get('/ogled/:id', async (req, res, next) => {
 
 app.get('/novo', [checkLogin, getMsg], (req, res) => {
   if (!res.locals.user) {
-    return res.redirect('/prijava?msg=' + encodeURIComponent('za objavo se prijavi :)'));
+    return res.redirect('/knjizarna/prijava?msg=' + encodeURIComponent('za objavo se prijavi :)'));
   }
   res.render('pages/novo', { entry: {} });
 });
@@ -219,17 +219,18 @@ app.post('/publish', checkLogin, async (req, res) => {
       if (err) return res.status(500).send(err);
 
       // generate image
-      const thumbPath = id + '.jpg';
+      const thumbFilename = id + '.jpg';
+      const thumbPath = '/public/img/thumbs/' + thumbFilename;
       await convertpdf(pathname, path.resolve(__dirname + thumbPath));
-      info.thumb = thumbPath;
+      info.thumb = thumbFilename;
 
       await db.files.insert(info);
       checkDuplicates();
-      return res.redirect('/tekst/' + info.id);
+      return res.redirect('/knjizarna/tekst/' + info.id);
     });
   } else {
     await db.files.update({ id: info.id }, { $set: info });
-    res.redirect('/tekst/' + info.id);
+    res.redirect('/knjizarna/tekst/' + info.id);
   }
 });
 
@@ -237,7 +238,7 @@ app.get('/delete/:id', [checkLogin, getMsg], async (req, res) => {
   const entry = await db.files.findOne({ id: req.params.id });
 
   if (!res.locals.user?.usr) {
-    return res.redirect('/prijava?msg=' + encodeURIComponent('za izbris se prijavi!'));
+    return res.redirect('/knjizarna/prijava?msg=' + encodeURIComponent('za izbris se prijavi!'));
   } else if (res.locals.user?.usr !== entry.uploadedBy && !res.locals.user?.admin) {
     // mark as "delete"
     await db.files.update({ id: req.params.id }, { $set: { 'flags.delete': res.locals.user.usr } });
@@ -251,7 +252,7 @@ app.get('/delete/:id', [checkLogin, getMsg], async (req, res) => {
   checkDuplicates();
 
   const msg = encodeURIComponent('izbrisano: ' + entry.title); // + entry.naslov
-  res.redirect('/?msg=' + msg);
+  res.redirect('/knjizarna/?msg=' + msg);
 });
 
 app.get('/undelete/:id', [checkLogin, getMsg], async (req, res) => {
@@ -265,7 +266,7 @@ app.get('/undelete/:id', [checkLogin, getMsg], async (req, res) => {
 // --- UPORABNIKI IN PRIJAVA
 
 app.get('/prijava', [checkLogin, getMsg], (req, res) => {
-  if (res.locals.user) return res.redirect('/');
+  if (res.locals.user) return res.redirect('/knjizarna/');
   res.render('pages/prijava');
 });
 
@@ -274,7 +275,7 @@ app.get('/odjava', [checkLogin, getMsg], async (req, res) => {
   console.log(`removed ${removedNo} session documents.`);
 
   res.clearCookie('login'); // niti ni potrebno ..
-  res.redirect('/prijava/?msg=' + encodeURIComponent('vade in pace!'));
+  res.redirect('/knjizarna/prijava/?msg=' + encodeURIComponent('vade in pace!'));
 });
 
 app.post('/prijava', async (req, res) => {
@@ -289,15 +290,15 @@ app.post('/prijava', async (req, res) => {
 
       res.cookie('login', user.usr + ';' + session);
       const msg = user.admin ? 'salve, rex!' : 'salve!';
-      return res.redirect('/?msg=' + encodeURIComponent(msg));
+      return res.redirect('/knjizarna/?msg=' + encodeURIComponent(msg));
     }
 
     // uporabnik obstaja, toda napačno geslo
-    return res.redirect('/prijava?msg=' + encodeURIComponent('napačno geslo'));
+    return res.redirect('/knjizarna/prijava?msg=' + encodeURIComponent('napačno geslo'));
   }
 
   // uporabnik ne obstaja
-  return res.redirect('/prijava?msg=' + encodeURIComponent('uporabnik ne obstaja ..'));
+  return res.redirect('/knjizarna/prijava?msg=' + encodeURIComponent('uporabnik ne obstaja ..'));
 });
 
 app.get('/registracija', [checkLogin, getMsg], async (req, res) => {
@@ -314,13 +315,13 @@ app.get('/registracija', [checkLogin, getMsg], async (req, res) => {
 
   if (!entry) {
     // reference not valid
-    return res.redirect('/registracija?msg=' + encodeURIComponent('referenca ne obstaja .. poskusi ponovno'));
+    return res.redirect('/knjizarna/registracija?msg=' + encodeURIComponent('referenca ne obstaja .. poskusi ponovno'));
   }
 
   // reference valid, but user with email already exists
   const user = await db.users.findOne({ email: entry.email });
   if (user) {
-    return res.redirect('/prijava?msg=' + encodeURIComponent('uporabnik s tem e-poštnim naslovom že obstaja.'));
+    return res.redirect('/knjizarna/prijava?msg=' + encodeURIComponent('uporabnik s tem e-poštnim naslovom že obstaja.'));
   }
 
   // koncno je vse ok. render stran, kjer se lahko registrira.
@@ -356,14 +357,14 @@ app.post('/registracija', checkLogin, async (req, res) => {
   const { usr, pwd, pwdCheck, ref } = req.body;
 
   const entry = await db.refs.findOne({ ref, expires: { $gt: new Date().valueOf() } });
-  if (!entry) return res.redirect('/registracija?msg=' + encodeURIComponent('poskusi ponovno.')); // ref ni ok ..
+  if (!entry) return res.redirect('/knjizarna/registracija?msg=' + encodeURIComponent('poskusi ponovno.')); // ref ni ok ..
 
   const { email } = entry;
 
   // check if email taken (user has already registered)
   const emailEntry = await db.users.findOne({ email });
   if (emailEntry) {
-    return res.redirect('/prijava?msg=' + encodeURIComponent('uporabnik s tem email naslovom že obstaja.'));
+    return res.redirect('/knjizarna/prijava?msg=' + encodeURIComponent('uporabnik s tem email naslovom že obstaja.'));
   }
 
   // check if username taken
@@ -381,7 +382,7 @@ app.post('/registracija', checkLogin, async (req, res) => {
 
   // mail ok, username free, password is ok => CREATE USER
   await db.users.insert({ usr, email, pwd: digest(pwd) });
-  res.redirect('/prijava?msg=' + encodeURIComponent('uspešna registracija!'));
+  res.redirect('/knjizarna/prijava?msg=' + encodeURIComponent('uspešna registracija!'));
 });
 
 app.get('/api/getCobissData', async (req, res) => {
