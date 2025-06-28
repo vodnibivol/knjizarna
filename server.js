@@ -219,7 +219,7 @@ app.post('/publish', checkLogin, async (req, res) => {
       if (err) return res.status(500).send(err);
 
       // generate image
-      const thumbPath = '/knjizarna/public/img/thumbs/' + id + '.jpg';
+      const thumbPath = id + '.jpg';
       await convertpdf(pathname, path.resolve(__dirname + thumbPath));
       info.thumb = thumbPath;
 
