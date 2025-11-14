@@ -37,10 +37,26 @@
   <body>
     <%- include("../partials/nav") %>
 
+    <% const strings = {
+      lang: 'en',
+      en: {
+        register: 'register',
+        input_placeholder: 'mouse@tinyhouse.com',
+        help_msg: 'at your email you\'ll receive the link\nwith which you can register.\n\nthe link is active for 24 hours.',
+        sending_email: 'sending email ..',
+      },
+      slo: {
+        register: 'registracija',
+        input_placeholder: 'miska@malahiska.com',
+        help_msg: 'na e-poštni naslov boš prejel link,\ns katerim se lahko registriraš.\n\nlink je veljaven 24 ur.',
+        sending_email: 'pošiljanje sporočila ..',
+      },
+    } %>
+
     <div class="container">
-      <h2>registracija<sup>[?]</sup></h2>
+      <h2><%- strings[strings.lang].register %><sup>[?]</sup></h2>
       <form action="#" method="post">
-        <input type="email" placeholder="miska@malahiska.com" name="email" id="email" autocomplete="off" required />
+        <input type="email" placeholder="<%- strings[strings.lang].input_placeholder %>" name="email" id="email" autocomplete="off" required />
         <input type="submit" value="ok" />
       </form>
     </div>
@@ -48,11 +64,7 @@
     <script>
       $('sup').onclick = (e) => {
         Modal.alt({
-          msg: `\
-          na e-poštni naslov boš prejel link,
-          s katerim se lahko registriraš.
-
-          link je veljaven 24 ur.`,
+          msg: `<%- strings[strings.lang].help_msg %>`,
         })
       }
 
@@ -63,7 +75,7 @@
         [...$('form').children].forEach((c) => (c.disabled = true));
         
         // AJAX!
-        Msg.show('pošiljanje sporočila ..');
+        Msg.show('<%- strings[strings.lang].sending_email %>');
         postData('/confirmemail', { email }).then((res) => {
           if (res.status === 'ok') {
             Msg.show(res.msg, res.status);

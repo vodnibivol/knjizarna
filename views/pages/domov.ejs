@@ -29,20 +29,32 @@
       }
     </style>
   </head>
+
+  <% const strings = {
+    lang: 'en',
+    en: {
+      search: 'search',
+      input_placeholder: 'name, author ..',
+    },
+    slo: {
+      search: 'iskanje',
+      input_placeholder: 'ime, avtor ..',
+    },
+  } %>
+
   <body>
     <%- include("../partials/nav") %>
 
     <div class="container">
       <img src="/knjizarna/public/img/silentivm.jpg" alt="medieval schola">
-      <h2>iskanje</h2>
+      <h2><%- strings[strings.lang].search %></h2>
       <form action="/knjizarna/iskanje">
-        <input type="text" placeholder="ime, avtor, .." name="q" id="q" autocomplete="off" required />
+        <input type="text" placeholder="<%- strings[strings.lang].input_placeholder %>" name="q" id="q" autocomplete="off" required />
         <input type="submit" value="ok" />
       </form>
     </div>
 
     <script>
-      // $('.container').onclick = () => $('input[type="text"]').select();
       window.onload = () => $('input[type="text"]').select();
     </script>
 

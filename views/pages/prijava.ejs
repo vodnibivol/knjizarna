@@ -42,28 +42,46 @@
   <body>
     <%- include("../partials/nav") %>
 
+    <% const strings = {
+      lang: 'en',
+      en: {
+        login: 'login',
+        username: 'username',
+        password: 'password',
+        forgot_password: 'forgot password?',
+        register: 'register',
+        register_msg: 'not available at the moment .. try\nto remember!'
+      },
+      slo: {
+        login: 'prijava',
+        username: 'uporabniško ime',
+        password: 'geslo',
+        forgot_password: 'pozabljeno geslo?',
+        register: 'registracija',
+        register_msg: 'storitev žal še ni na voljo .. probaj\nse spomniti!'
+      },
+    } %>
+
     <div class="container">
       <img src="/knjizarna/public/img/alexand.jpg" alt="medieval schola">
-      <h2>prijava</h2>
+      <h2><%- strings[strings.lang].login %></h2>
       <form action="/knjizarna/prijava" method="post">
-        <input class="txt" type="text" placeholder="uporabniško ime" name="usr" id="usr" autocomplete="off" required />
+        <input class="txt" type="text" placeholder="<%- strings[strings.lang].username %>" name="usr" id="usr" autocomplete="off" required />
         <br>
-        <input class="txt" type="password" minlength="6" placeholder="geslo" name="pwd" id="pwd" autocomplete="off" required />
+        <input class="txt" type="password" minlength="6" placeholder="<%- strings[strings.lang].password %>" name="pwd" id="pwd" autocomplete="off" required />
         <br>
         <br>
         <input type="submit" value="ok" />
       </form>
 
-      <p class="links"><a href="/knjizarna/pozabljivcek">pozabljeno geslo?</a> | <a href="/knjizarna/registracija">registracija</a></p>
+      <p class="links"><a href="/knjizarna/pozabljivcek"><%- strings[strings.lang].forgot_password %></a> | <a href="/knjizarna/registracija"><%- strings[strings.lang].register %></a></p>
     </div>
 
     <script>
       $('a[href="/knjizarna/pozabljivcek"]').onclick = (e) => {
         e.preventDefault();
         Modal.alt({
-          msg: `\
-          storitev žal še ni na voljo .. probaj
-          se spomniti!`,
+          msg: `<%- strings[strings.lang].register_msg %>`,
         })
       }
 

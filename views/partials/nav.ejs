@@ -31,6 +31,20 @@
 
 </style>
 
+<% const strings = {
+  lang: 'en',
+  en: {
+    new_post: 'new',
+    login: 'login',
+    logout: 'logout',
+  },
+  slo: {
+    new_post: 'novo',
+    login: 'prijava',
+    logout: 'odjava',
+  },
+} %>
+
 <header>
   <div class="left">
     <% if (typeof prev !== 'undefined' && !!prev) { %>
@@ -50,11 +64,11 @@
     <% }; %>
   </div>
   <div class="right">
-    <a class="black" href="/knjizarna/novo">novo</a> |
+    <a class="black" href="/knjizarna/novo"><%- strings[strings.lang].new_post %></a> |
     <% if (user) { %>
-      <a class="black" href="/knjizarna/odjava">odjava (<%- user.usr + (user.admin ? ":admin" : "") %>)</a>
+      <a class="black" href="/knjizarna/odjava"><%- strings[strings.lang].logout %> (<%- user.usr + (user.admin ? ":admin" : "") %>)</a>
     <% } else { %>
-      <a class="black" href="/knjizarna/prijava">prijava</a>
+      <a class="black" href="/knjizarna/prijava"><%- strings[strings.lang].login %></a>
     <% }; %> 
   </div>
 </header>

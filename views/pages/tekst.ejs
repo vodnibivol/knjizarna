@@ -59,6 +59,7 @@
         background: lightblue;
         font-weight: bold;
         width: 80px;
+        white-space: nowrap;
       }
       
       .opis {
@@ -76,6 +77,7 @@
     </style>
     <% }; %> 
   </head>
+
   <body>
     <%- include("../partials/nav") %>
 
@@ -97,25 +99,21 @@
       <div class="row">
         <div class="tables">
           <% const tableOne = {
-            avtor: entry.author,
-            naslov: entry.title,
-            kraj: entry.place,
-            založba: entry.publisher,
-            letnica: entry.year,
+            author: entry.author, // avtor
+            title: entry.title, // naslov
+            place: entry.place, // kraj
+            publisher: entry.publisher, // založba
+            year: entry.year, // letnica
           }; %> 
           <%- include("../partials/table-vertical", { obj: tableOne }) %> 
           
           <% const tableTwo = {
             id: entry.id,
-            velikost: entry.sizeStr,
-            naložil: entry.uploadedBy,
-            uredil: entry.lastEdit ? `<a id="edits" class="black">${entry.lastEdit.user}</a>` : null,
+            size: entry.sizeStr, // velikost
+            'uploaded by': entry.uploadedBy, // naložil
+            'edited by': entry.lastEdit ? `<a id="edits" class="black">${entry.lastEdit.user}</a>` : null, // uredil
             // flags: JSON.stringify(entry.flags),
           }; %> 
-          
-          <%# if (entry.lastEdit) {
-            tableTwo.uredil = `<a id="edits" class="black" href="#">${entry.lastEdit.user}</a>`;
-          }; %>
 
           <%- include("../partials/table-vertical", { obj: tableTwo }) %>
           
@@ -141,17 +139,33 @@
           </div>
         </a>
       </div>
+
+      <% const strings = {
+        lang: 'en',
+        en: {
+          view: 'view',
+          download: 'download',
+          edit: 'edit',
+          delete: 'delete',
+        },
+        slo: {
+          view: 'ogled',
+          download: 'download',
+          edit: 'uredi',
+          delete: 'izbriši',
+        },
+      } %>
       
       <% if (entry.description) { %>
         <p class="opis"><%= entry.description %></p>
       <% } %>
       <!-- <p style="margin-bottom:2rem;">---</p> -->
       <p>
-        <a href="/knjizarna/ogled/<%- entry.id %>">ogled</a> |
-        <a href="/knjizarna/ogled/<%- entry.id %>" download="<%- entry.originalFilename %>">download</a>
+        <a href="/knjizarna/ogled/<%- entry.id %>"><%- strings[strings.lang].view %></a> |
+        <a href="/knjizarna/ogled/<%- entry.id %>" download="<%- entry.originalFilename %>"><%- strings[strings.lang].download %></a>
         <% if (user?.usr) { %>
-          | <a href="/knjizarna/uredi/<%- entry.id %>" id="edit">uredi</a>
-          | <a href="#" id="remove"><%- user?.admin || user?.usr === entry.uploadedBy ? 'izbriši' : 'izbriši*' %></a>
+          | <a href="/knjizarna/uredi/<%- entry.id %>" id="edit"><%- strings[strings.lang].edit %></a>
+          | <a href="#" id="remove"><%- strings[strings.lang].delete + ((user?.admin || user?.usr === entry.uploadedBy) ? '' : '*') %></a>
           <% } %>
           <% if (user?.admin && entry.flags?.delete) { %>
             | <a href="/knjizarna/undelete/<%- entry.id %>" id="remove">odizbriši</a>

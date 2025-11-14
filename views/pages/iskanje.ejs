@@ -41,16 +41,39 @@
   </head>
   <body>
     <%- include("../partials/nav") %>
+
+    <% const strings = {
+      lang: 'en',
+      en: {
+        search_results: 'Search results',
+        id: 'id',
+        author: 'author',
+        title: 'title',
+        year: 'year',
+        uploaded_by: 'upload by',
+        no_results: 'no results. try \'Aristotel\', \'Fragmenti\', or just \'.\' ..'
+      },
+      slo: {
+        search_results: 'Rezultati iskanja',
+        id: 'id',
+        author: 'avtor',
+        title: 'naslov',
+        year: 'leto',
+        uploaded_by: 'naložil',
+        no_results: 'ni rezultatov. išči pametno ..'
+      },
+    } %>
+
     <div class="container">
-      <h2>Rezultati iskanja: "<%- query %>"</h2>
+      <h2><%- strings[strings.lang].search_results %>: "<%- query %>"</h2>
       
     <table>
       <thead>
-        <th>id</th>
-        <th>avtor</th>
-        <th>naslov</th>
-        <th>leto</th>
-        <th>naložil</th>
+        <th><%- strings[strings.lang].id %></th>
+        <th><%- strings[strings.lang].author %></th>
+        <th><%- strings[strings.lang].title %></th>
+        <th><%- strings[strings.lang].year %></th>
+        <th><%- strings[strings.lang].uploaded_by %></th>
       </thead>
       <tbody>
         <% for (let res of results) { %>
@@ -85,7 +108,7 @@
     </table>
 
       <% if (!results.length) { %>
-        <h3>ni rezultatov. išči pametno ..</h3>
+        <h3><%- strings[strings.lang].no_results %></h3>
       <% } %>
     </div>
 

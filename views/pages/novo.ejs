@@ -62,12 +62,48 @@
       }
     </style>
   </head>
+
+
+  <% const strings = {
+    lang: 'en',
+    en: {
+      file: 'file',
+      about_text: 'about the text',
+      import_cobiss: 'import from',
+      file_title_label: 'DOCUMENT NAME',
+      author_label: 'author',
+      title_label: 'title',
+      place_label: 'place',
+      publisher_label: 'publisher',
+      year_label: 'year',
+      description_label: 'description',
+      source_label: 'source of data',
+      publish: 'publish',
+      save: 'save'
+    },
+    slo: {
+      file: 'datoteka',
+      about_text: 'o tekstu',
+      import_cobiss: 'uvozi iz',
+      file_title_label: 'IME DOKUMENTA',
+      author_label: 'author',
+      title_label: 'naslov',
+      place_label: 'kraj',
+      publisher_label: 'založba',
+      year_label: 'letnica',
+      description_label: 'opis',
+      source_label: 'vir podatkov',
+      publish: 'objavi',
+      save: 'shrani'
+    },
+  } %>
+
   <body>
     <%- include("../partials/nav") %>
 
     <div class="container">
       <form action="/knjizarna/publish" method="post" enctype="multipart/form-data" autocomplete="off" spellcheck="false">
-        <h2>datoteka</h2>
+        <h2><%- strings[strings.lang].file %></h2>
         <% if (!user?.admin && !entry.id || entry.flags?.missing) { %>
           <input type="file" id="doc" name="doc" accept="application/pdf" required />
         <% } else { %>
@@ -78,17 +114,17 @@
         
 
         <% const fields = [
-          { dbName: 'entryTitle', text: 'IME DOKUMENTA', plc: 'Platon: Država (6. knjiga)' },
-          { dbName: 'author', text: 'avtor', plc: 'Aristotel' },
-          { dbName: 'title', text: 'naslov', plc: 'Nikomahova etika', required: true },
-          { dbName: 'place', text: 'kraj', plc: 'Ljubljana' },
-          { dbName: 'publisher', text: 'založba', plc: 'Cankarjeva založba' },
-          { dbName: 'year', text: 'letnica', plc: '1964' },
+          { dbName: 'entryTitle', text: strings[strings.lang].file_title_label, plc: 'Platon: Država (6. knjiga)' },
+          { dbName: 'author', text: strings[strings.lang].author_label, plc: 'Aristotel' },
+          { dbName: 'title', text: strings[strings.lang].title_label, plc: 'Nikomahova etika', required: true },
+          { dbName: 'place', text: strings[strings.lang].place_label, plc: 'Ljubljana' },
+          { dbName: 'publisher', text: strings[strings.lang].publisher_label, plc: 'Cankarjeva založba' },
+          { dbName: 'year', text: strings[strings.lang].year_label, plc: '1964' },
         ]; %> 
 
-        <h2>o tekstu</h2>
+        <h2><%- strings[strings.lang].about_text %></h2>
         
-        <em>uvozi iz <a href="javascript:showCobissModal()">COBISS</a></em>
+        <em><%- strings[strings.lang].import_cobiss %> <a href="javascript:showCobissModal()">COBISS</a></em>
         <br><br>
 
         <% for (let el of fields) { %>
@@ -96,7 +132,7 @@
           <input type="text" name="<%- el.dbName %>" id="<%- el.dbName %>" data-prev="<%- entry[el.dbName] %>" placeholder="<<%- el.plc %>>" value="<%- entry[el.dbName] %>" <%- el.required && 'required' %> />
         <% }; %>
 
-        <label for="description">opis</label>
+        <label for="description"><%- strings[strings.lang].description_label %></label>
         <textarea name="description" id="description" rows="2" data-prev="<%- entry.description %>" placeholder="strani, opis datoteke .."><%- entry.description %></textarea>
         
         <br><hr>
@@ -105,13 +141,13 @@
           <input type="text" name="edits" id="edits" placeholder="typo; dodal(a) naslov .." required>
         <% }; %>
 
-        <label for="source">vir podatkov</label>
+        <label for="source"><%- strings[strings.lang].source_label %></label>
         <input type="text" name="source" id="source" placeholder="<url>; znanje; tekst .." required>
 
         <input type="hidden" name="ris" id="ris" />
         <input type="hidden" name="id" value="<%- entry.id %>" />
 
-        <input type="submit" value="<%- (entry.id ? 'shrani' : 'objavi') %>" tabindex="-1" disabled />
+        <input type="submit" value="<%- (entry.id ? strings[strings.lang].save : strings[strings.lang].publish) %>" tabindex="-1" disabled />
       </form>
     </div>
 

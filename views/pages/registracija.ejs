@@ -62,28 +62,50 @@
   </head>
   <body>
     <%- include("../partials/nav") %>
+
+    <% const strings = {
+      lang: 'en',
+      en: {
+        register: 'register',
+        email_label: 'email [confirmed]',
+        username_label: 'username',
+        username_placeholder: 'tinymouse',
+        password_label: 'password',
+        password_placeholder: 'terrific-password123',
+        password_re_label: 'repeat password'
+      },
+      slo: {
+        register: 'registracija',
+        email_label: 'email [potrjen]',
+        username_label: 'uporabniško ime',
+        username_placeholder: 'malamis',
+        password_label: 'geslo',
+        password_placeholder: 'strasno-geslo123',
+        password_re_label: 'ponovi geslo'
+      },
+    } %>
     
     <div class="container">
       <form action="/knjizarna/registracija" method="post">
         <!-- EMAIL CONFIRMED: REGISTER -->
-        <h2>registracija</h2>
+        <h2><%- strings[strings.lang].register %></h2>
         <br>
 
-        <label for="email">email [potrjen]</label>
-        <input type="email" id="email" placeholder="malamis" value="<%- email %>" disabled>
+        <label for="email"><%- strings[strings.lang].email_label %></label>
+        <input type="email" id="email" value="<%- email %>" disabled>
 
-        <label for="usr">uporabniško ime</label>
-        <input type="text" name="usr" id="usr" placeholder="malamis" value="<%- usr %>" required>
+        <label for="usr"><%- strings[strings.lang].username_label %></label>
+        <input type="text" name="usr" id="usr" placeholder="<%- strings[strings.lang].username_placeholder %>" value="<%- usr %>" required>
 
-        <label for="pwd">geslo</label>
-        <input type="password" name="pwd" id="pwd" placeholder="strasno-geslo123" required>
+        <label for="pwd"><%- strings[strings.lang].password_label %></label>
+        <input type="password" name="pwd" id="pwd" placeholder="<%- strings[strings.lang].password_placeholder %>" required>
 
-        <label for="pwdCheck">ponovno geslo</label>
-        <input type="password" name="pwdCheck" id="pwdCheck" placeholder="strasno-geslo123" required>
+        <label for="pwdCheck"><%- strings[strings.lang].password_re_label %></label>
+        <input type="password" name="pwdCheck" id="pwdCheck" placeholder="<%- strings[strings.lang].password_placeholder %>" required>
 
         <input type="hidden" name="ref" value="<%- ref %>">
 
-        <input type="submit" value="registracija">
+        <input type="submit" value="<%- strings[strings.lang].register %>">
       </div>
     </form>
 

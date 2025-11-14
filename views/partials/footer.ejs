@@ -16,23 +16,38 @@
   }
 </style>
 
+<%
+const mailInfo = (subject) => `<a href="mailto:vodnibivol@gmail.com?subject=${subject}">vodnibivol@gmail.com</a>`;
+const strings = {
+  lang: 'en',
+  en: {
+    description: `\
+      i made this page to help students research
+      and find study texts. for all suggestions,
+      bugs .. write to: ${mailInfo('Suggestion for Knjižarna!')}.
+
+      all the luck and enjoy the site!
+      filip`,
+  },
+  slo: {
+    description: `\
+      stran sem naredil za pomoč pri raziskovanju in
+      iskanju študijskega gradiva. za vse predloge,
+      napake, spremembe .. piši na: ${mailInfo('Predlog za Knjižarno!')}.
+      
+      veliko uspehov in veselja pri uporabi!
+      filip`,
+  },
+} %>
+
 <footer>
   <%- new Date().getFullYear() %> | <span id="admin">vodnibivol</span>
 </footer>
 
 <script>
   (function() {
-    const mailInfo = `<a href="mailto:vodnibivol@gmail.com?subject=Predlog za Knjižarno!">vodnibivol@gmail.com</a>`
-    const html = `\
-      stran sem naredil za pomoč pri raziskovanju in
-      iskanju študijskega gradiva. za vse predloge,
-      napake, spremembe .. piši na: ${mailInfo}.
-      
-      veliko uspehov in veselja pri uporabi!
-      filip`.replace(/\n/g, '<br>');
-
     $('#admin').onclick = (e) => {
-      Modal.alt({ html });
+      Modal.alt({ html: `<%- strings[strings.lang].description %>` });
     }
   })()
 </script>
